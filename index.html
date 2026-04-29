@@ -1107,7 +1107,7 @@
           <button class="btn-sm" onclick="navTo('proyectos', null)">Ver todos →</button>
         </div>
 
-        <div class="projects-list">
+        <div class="projects-list" id="proyectos-lista">
           <div class="proj-row header">
             <div></div>
             <div>Proyecto / cliente</div>
@@ -1116,76 +1116,7 @@
             <div>Lead</div>
             <div>Cierre</div>
           </div>
-          <div class="proj-row" onclick="openNota('p1')">
-            <div class="rag-dot verde"></div>
-            <div>
-              <div class="proj-name">S/4HANA FI — Grupo Norteño</div>
-              <div class="proj-client">Mario · Adrian · Andrés</div>
-            </div>
-            <span class="tag tag-impl">Impl.</span>
-            <div class="pct-bar-wrap">
-              <div class="pct-text">62%</div>
-              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:62%;background:var(--green)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted)">MA</div>
-            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Jun 25</div>
-          </div>
-          <div class="proj-row" onclick="openNota('p2')">
-            <div class="rag-dot amarillo"></div>
-            <div>
-              <div class="proj-name">CPI Integration — TexMaq</div>
-              <div class="proj-client">Francisco · David</div>
-            </div>
-            <span class="tag tag-impl">Impl.</span>
-            <div class="pct-bar-wrap">
-              <div class="pct-text">85%</div>
-              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:85%;background:var(--amber)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted)">FR</div>
-            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">May 25</div>
-          </div>
-          <div class="proj-row" onclick="openNota('p3')">
-            <div class="rag-dot rojo"></div>
-            <div>
-              <div class="proj-name">HCM Payroll — Constructora Alva</div>
-              <div class="proj-client">Héctor</div>
-            </div>
-            <span class="tag tag-impl">Impl.</span>
-            <div class="pct-bar-wrap">
-              <div class="pct-text" style="color:var(--red)">103%</div>
-              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:100%;background:var(--red)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted)">HM</div>
-            <div style="font-size:11px;color:var(--red);font-family:var(--mono)">Vencido</div>
-          </div>
-          <div class="proj-row" onclick="openNota('p4')">
-            <div class="rag-dot verde"></div>
-            <div>
-              <div class="proj-name">ABAP Custom — Industriales del Norte</div>
-              <div class="proj-client">Kevin · Luis</div>
-            </div>
-            <span class="tag tag-impl">Impl.</span>
-            <div class="pct-bar-wrap">
-              <div class="pct-text">38%</div>
-              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:38%;background:var(--green)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted)">LH</div>
-            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Jul 25</div>
-          </div>
-          <div class="proj-row" onclick="openNota('p5')">
-            <div class="rag-dot amarillo"></div>
-            <div>
-              <div class="proj-name">MM/SD Soporte — Metalúrgica REX</div>
-              <div class="proj-client">Adrian</div>
-            </div>
-            <span class="tag tag-sop">Soporte</span>
-            <div class="pct-bar-wrap">
-              <div class="pct-text">71%</div>
-              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:71%;background:var(--amber)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted)">AD</div>
-            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Rolling</div>
-          </div>
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando proyectos…</div>
         </div>
 
         <div class="grid2">
@@ -1327,43 +1258,35 @@
 <!-- ══════ MODAL NOTA RÁPIDA ══════ -->
 <div class="modal-overlay" id="modal-nota">
   <div class="modal">
-    <div class="modal-title">Nota / actualización de estatus</div>
-    <div class="field">
-      <label>Proyecto</label>
-      <select id="nota-proyecto">
-        <option>S/4HANA FI — Grupo Norteño</option>
-        <option>CPI Integration — TexMaq</option>
-        <option>HCM Payroll — Constructora Alva</option>
-        <option>ABAP Custom — Industriales del Norte</option>
-        <option>MM/SD Soporte — Metalúrgica REX</option>
-      </select>
-    </div>
+    <div class="modal-title" id="nota-proyecto-label">Nota / actualización de estatus</div>
+    <input type="hidden" id="nota-proyecto-id">
     <div class="field">
       <label>Estatus RAG</label>
       <div class="rag-sel">
-        <button class="rag-opt sel-verde" onclick="selRag(this,'verde')">Verde</button>
-        <button class="rag-opt" onclick="selRag(this,'amarillo')">Amarillo</button>
-        <button class="rag-opt" onclick="selRag(this,'rojo')">Rojo</button>
+        <button class="rag-opt sel-verde" data-rag="verde" onclick="selRag(this,'verde')">Verde</button>
+        <button class="rag-opt" data-rag="amarillo" onclick="selRag(this,'amarillo')">Amarillo</button>
+        <button class="rag-opt" data-rag="rojo" onclick="selRag(this,'rojo')">Rojo</button>
       </div>
     </div>
     <div class="field">
       <label>Tipo de nota</label>
-      <div class="chip-group">
-        <button class="chip sel" onclick="togChip(this)">Seguimiento</button>
-        <button class="chip" onclick="togChip(this)">Acuerdo cliente</button>
-        <button class="chip" onclick="togChip(this)">Bloqueador</button>
-        <button class="chip" onclick="togChip(this)">Hito completado</button>
-        <button class="chip" onclick="togChip(this)">Riesgo</button>
-        <button class="chip" onclick="togChip(this)">Acción interna</button>
+      <div class="chip-group" id="nota-chips">
+        <button class="chip sel" data-tipo="seguimiento" onclick="togChipSingle(this)">Seguimiento</button>
+        <button class="chip" data-tipo="acuerdo" onclick="togChipSingle(this)">Acuerdo cliente</button>
+        <button class="chip" data-tipo="bloqueador" onclick="togChipSingle(this)">Bloqueador</button>
+        <button class="chip" data-tipo="hito" onclick="togChipSingle(this)">Hito completado</button>
+        <button class="chip" data-tipo="riesgo" onclick="togChipSingle(this)">Riesgo</button>
+        <button class="chip" data-tipo="accion-interna" onclick="togChipSingle(this)">Acción interna</button>
       </div>
     </div>
     <div class="field">
       <label>Nota</label>
-      <textarea placeholder="¿Qué pasó esta semana? Avances, bloqueadores, acuerdos con el cliente…" rows="4"></textarea>
+      <textarea id="nota-texto" placeholder="¿Qué pasó? Avances, bloqueadores, acuerdos con el cliente…" rows="4"></textarea>
     </div>
+    <div id="notas-historial" style="margin-top:8px;max-height:180px;overflow-y:auto"></div>
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-nota')">Cancelar</button>
-      <button class="btn-primary" onclick="closeModal('modal-nota')">Guardar nota</button>
+      <button class="btn-primary" id="btn-guardar-nota" onclick="guardarNota()">Guardar nota</button>
     </div>
   </div>
 </div>
@@ -1373,52 +1296,58 @@
   <div class="modal">
     <div class="modal-title">Nuevo proyecto</div>
     <div class="field">
-      <label>Nombre del proyecto</label>
-      <input type="text" placeholder="ej. S/4HANA FI — Grupo Norteño">
+      <label>Nombre del proyecto *</label>
+      <input type="text" id="proy-nombre" placeholder="ej. S/4HANA FI — Grupo Norteño">
     </div>
     <div class="row2">
       <div class="field">
         <label>Cliente</label>
-        <input type="text" placeholder="Razón social">
+        <input type="text" id="proy-cliente" placeholder="Razón social">
       </div>
       <div class="field">
         <label>Tipo</label>
-        <select>
-          <option>Implementación</option>
-          <option>Soporte / AMS</option>
-          <option>Staffing</option>
-          <option>Desarrollo</option>
-          <option>Consultoría puntual</option>
+        <select id="proy-tipo">
+          <option value="implementacion">Implementación</option>
+          <option value="soporte">Soporte / AMS</option>
+          <option value="staffing">Staffing</option>
+          <option value="desarrollo">Desarrollo</option>
+          <option value="consultoria">Consultoría puntual</option>
         </select>
       </div>
     </div>
     <div class="row2">
       <div class="field">
         <label>Inicio</label>
-        <input type="date">
+        <input type="date" id="proy-inicio">
       </div>
       <div class="field">
         <label>Cierre estimado</label>
-        <input type="date">
+        <input type="date" id="proy-cierre">
       </div>
     </div>
     <div class="field">
+      <label>Horas vendidas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(opcional)</span></label>
+      <input type="number" id="proy-horas" placeholder="ej. 320">
+    </div>
+    <div class="field">
       <label>Módulos SAP</label>
-      <div class="chip-group">
+      <div class="chip-group" id="proy-modulos">
         <button class="chip" onclick="togChip(this)">FI</button>
         <button class="chip" onclick="togChip(this)">CO</button>
         <button class="chip" onclick="togChip(this)">MM</button>
         <button class="chip" onclick="togChip(this)">SD</button>
         <button class="chip" onclick="togChip(this)">HCM</button>
+        <button class="chip" onclick="togChip(this)">PP</button>
         <button class="chip" onclick="togChip(this)">ABAP</button>
         <button class="chip" onclick="togChip(this)">BTP</button>
         <button class="chip" onclick="togChip(this)">CPI</button>
         <button class="chip" onclick="togChip(this)">Fiori</button>
+        <button class="chip" onclick="togChip(this)">S/4HANA</button>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-proyecto')">Cancelar</button>
-      <button class="btn-primary" onclick="closeModal('modal-proyecto')">Crear proyecto</button>
+      <button class="btn-primary" id="btn-crear-proyecto" onclick="crearProyecto()">Crear proyecto</button>
     </div>
   </div>
 </div>
@@ -1491,14 +1420,15 @@
 
 <!-- ══════ FIREBASE ══════ -->
 <script type="module">
-  import { initializeApp }                    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider,
            signInWithPopup, signOut as fbSignOut,
-           onAuthStateChanged }               from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc,
-           setDoc, serverTimestamp }          from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+           onAuthStateChanged }                     from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, getDocs,
+           setDoc, addDoc, updateDoc, deleteDoc,
+           collection, query, where, orderBy,
+           onSnapshot, serverTimestamp, writeBatch} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  // ── REEMPLAZA CON TUS CREDENCIALES ──
   const firebaseConfig = {
     apiKey:            "AIzaSyC2ihs32DL8SA0bPxf8MZmr5jncm5w4x2c",
     authDomain:        "asap-bits-hub.firebaseapp.com",
@@ -1515,96 +1445,306 @@
 
   const ALLOWED_DOMAIN = "asapbits.com";
 
-  // ── EXPONER GLOBALES ──
   window._auth = auth;
   window._db   = db;
 
+  // ── AUTH ──
   window.signInGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ hd: ALLOWED_DOMAIN });
     try {
       const result = await signInWithPopup(auth, provider);
-      const email  = result.user.email;
-      if (!email.endsWith("@" + ALLOWED_DOMAIN)) {
+      if (!result.user.email.endsWith("@" + ALLOWED_DOMAIN)) {
         await fbSignOut(auth);
         showLoginError("Solo cuentas @" + ALLOWED_DOMAIN + " tienen acceso.");
       }
     } catch (e) {
-      if (e.code !== "auth/popup-closed-by-user") {
+      if (e.code !== "auth/popup-closed-by-user")
         showLoginError("Error al iniciar sesión. Intenta de nuevo.");
-      }
     }
   };
 
-  window.signOut = async () => {
-    await fbSignOut(auth);
-  };
+  window.signOut = async () => await fbSignOut(auth);
 
   function showLoginError(msg) {
     const el = document.getElementById("login-error");
-    el.textContent = msg;
-    el.style.display = "block";
+    el.textContent = msg; el.style.display = "block";
   }
 
   // ── AUTH STATE ──
   onAuthStateChanged(auth, async (user) => {
     hide("loader");
-    if (!user) {
-      show("login-screen"); hide("app"); hide("pending-screen");
-      return;
-    }
+    if (!user) { show("login-screen"); hide("app"); hide("pending-screen"); return; }
 
-    // Obtener o crear doc de usuario en Firestore
     const userRef  = doc(db, "usuarios", user.uid);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      // Primera vez — crear doc sin rol
       await setDoc(userRef, {
-        uid:       user.uid,
-        nombre:    user.displayName || user.email.split("@")[0],
-        email:     user.email,
-        rol:       null,
-        activo:    true,
-        creadoEn:  serverTimestamp()
+        uid: user.uid,
+        nombre: user.displayName || user.email.split("@")[0],
+        email: user.email,
+        rol: null,
+        activo: true,
+        creadoEn: serverTimestamp()
       });
     }
 
     const userData = userSnap.exists() ? userSnap.data() : { rol: null };
-    const rol      = userData.rol;
 
-    if (!rol) {
-      // Sin rol — pantalla de pendiente
-      hide("login-screen"); hide("app");
-      show("pending-screen");
+    if (!userData.rol) {
+      hide("login-screen"); hide("app"); show("pending-screen");
       document.getElementById("pending-email").textContent = user.email;
       return;
     }
 
-    // Tiene rol — mostrar app
-    hide("login-screen"); hide("pending-screen");
-    show("app");
+    hide("login-screen"); hide("pending-screen"); show("app");
     initApp(user, userData);
   });
 
+  // ── INIT APP ──
   function initApp(user, userData) {
-    const rol = userData.rol;
+    const rol     = userData.rol;
+    const nombre  = userData.nombre || user.email.split("@")[0];
+    const inics   = nombre.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase();
 
-    // Avatar y nombre en sidebar
-    const nombre    = userData.nombre || user.email.split("@")[0];
-    const iniciales = nombre.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase();
-    document.getElementById("sidebar-avatar").textContent = iniciales;
+    document.getElementById("sidebar-avatar").textContent = inics;
     document.getElementById("sidebar-name").textContent   = nombre.split(" ")[0];
     document.getElementById("sidebar-role").textContent   = rol;
 
-    // Ajuste de nav por rol
-    if (rol === "consultor" || rol === "readonly") {
+    if (rol === "consultor" || rol === "readonly")
       document.getElementById("nav-admin-only").style.display = "none";
-    }
-    if (rol === "readonly") {
+    if (rol === "readonly")
       document.getElementById("nav-admin-ops").style.display = "none";
-    }
+
+    window._currentUser = { uid: user.uid, rol, nombre, inics };
+
+    // Cargar proyectos en tiempo real
+    cargarProyectos();
   }
+
+  // ══════════════════════════════════
+  // PROYECTOS
+  // ══════════════════════════════════
+  function cargarProyectos() {
+    const q = query(collection(db, "proyectos"), orderBy("creadoEn", "desc"));
+    onSnapshot(q, (snap) => {
+      const proyectos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      window._proyectos = proyectos;
+      renderProyectos(proyectos);
+      renderMetricas(proyectos);
+    });
+  }
+
+  function renderMetricas(proyectos) {
+    const activos   = proyectos.filter(p => p.estado === "activo");
+    const verdes    = activos.filter(p => p.ragEstado === "verde").length;
+    const amarillos = activos.filter(p => p.ragEstado === "amarillo").length;
+    const rojos     = activos.filter(p => p.ragEstado === "rojo").length;
+
+    const m = document.querySelectorAll(".metric-value");
+    if (m[0]) m[0].textContent = activos.length;
+    if (m[1]) m[1].textContent = verdes;
+    if (m[2]) m[2].textContent = amarillos;
+    if (m[3]) m[3].textContent = rojos;
+
+    const badge = document.getElementById("badge-rojo");
+    if (badge) { badge.textContent = rojos; badge.style.display = rojos > 0 ? "" : "none"; }
+  }
+
+  function renderProyectos(proyectos) {
+    const lista = document.getElementById("proyectos-lista");
+    if (!lista) return;
+
+    if (proyectos.length === 0) {
+      lista.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">
+        Sin proyectos aún — crea el primero con el botón +
+      </div>`;
+      return;
+    }
+
+    lista.innerHTML = proyectos.map(p => {
+      const pct      = p.horasVendidas && p.horasConsumidas
+                       ? Math.round((p.horasConsumidas / p.horasVendidas) * 100)
+                       : null;
+      const ragClass = p.ragEstado || "verde";
+      const barColor = ragClass === "verde" ? "var(--green)"
+                     : ragClass === "rojo"  ? "var(--red)" : "var(--amber)";
+      const tipoTag  = p.tipo === "soporte" || p.tipo === "Soporte / AMS"
+                       ? `<span class="tag tag-sop">Soporte</span>`
+                       : p.tipo === "staffing" || p.tipo === "Staffing"
+                       ? `<span class="tag tag-staff">Staffing</span>`
+                       : `<span class="tag tag-impl">Impl.</span>`;
+      const cierre   = p.fechaCierre
+                       ? new Date(p.fechaCierre).toLocaleDateString("es-MX",{month:"short",year:"2-digit"})
+                       : "—";
+      const pctTxt   = pct !== null ? `${pct}%` : "—";
+      const barW     = pct !== null ? Math.min(pct, 100) : 0;
+      const vencido  = p.fechaCierre && new Date(p.fechaCierre) < new Date();
+
+      return `<div class="proj-row" onclick="abrirNota('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}')">
+        <div class="rag-dot ${ragClass}"></div>
+        <div>
+          <div class="proj-name">${p.nombre || "Sin nombre"}</div>
+          <div class="proj-client">${p.cliente || ""}${p.modulos && p.modulos.length ? " · " + p.modulos.slice(0,3).join(", ") : ""}</div>
+        </div>
+        ${tipoTag}
+        <div class="pct-bar-wrap">
+          <div class="pct-text" style="${pct > 100 ? "color:var(--red)" : ""}">${pctTxt}</div>
+          <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:${barW}%;background:${barColor}"></div></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">${p.leadNombre || "—"}</div>
+        <div style="font-size:11px;color:${vencido?"var(--red)":"var(--muted)"};font-family:var(--mono)">${vencido?"Vencido":cierre}</div>
+      </div>`;
+    }).join("");
+  }
+
+  // ── CREAR PROYECTO ──
+  window.crearProyecto = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const nombre   = document.getElementById("proy-nombre").value.trim();
+    const cliente  = document.getElementById("proy-cliente").value.trim();
+    const tipo     = document.getElementById("proy-tipo").value;
+    const inicio   = document.getElementById("proy-inicio").value;
+    const cierre   = document.getElementById("proy-cierre").value;
+    const horas    = parseInt(document.getElementById("proy-horas").value) || null;
+
+    if (!nombre) { alert("El nombre del proyecto es obligatorio."); return; }
+
+    const modulos = [...document.querySelectorAll("#proy-modulos .chip.sel")]
+                      .map(c => c.textContent.trim());
+
+    const btnGuardar = document.getElementById("btn-crear-proyecto");
+    btnGuardar.textContent = "Guardando…"; btnGuardar.disabled = true;
+
+    try {
+      await addDoc(collection(db, "proyectos"), {
+        nombre,
+        cliente,
+        tipo,
+        estado:        "activo",
+        ragEstado:     "verde",
+        ragHistorial:  [],
+        modulos,
+        fechaInicio:   inicio || null,
+        fechaCierre:   cierre || null,
+        horasVendidas: horas,
+        horasConsumidas: 0,
+        leadId:        u.uid,
+        leadNombre:    u.inics,
+        ultimaNota:    null,
+        creadoEn:      serverTimestamp(),
+        creadoPor:     u.uid
+      });
+      closeModal("modal-proyecto");
+      limpiarFormProyecto();
+    } catch(e) {
+      console.error(e);
+      alert("Error al guardar. Revisa la consola.");
+    } finally {
+      btnGuardar.textContent = "Crear proyecto"; btnGuardar.disabled = false;
+    }
+  };
+
+  function limpiarFormProyecto() {
+    ["proy-nombre","proy-cliente","proy-inicio","proy-cierre","proy-horas"]
+      .forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+    document.querySelectorAll("#proy-modulos .chip").forEach(c => c.classList.remove("sel"));
+    document.getElementById("proy-tipo").selectedIndex = 0;
+  }
+
+  // ── NOTAS ──
+  window.abrirNota = (proyId, proyNombre) => {
+    document.getElementById("nota-proyecto-id").value   = proyId;
+    document.getElementById("nota-proyecto-label").textContent = proyNombre;
+    document.getElementById("nota-texto").value = "";
+    cargarNotasRecientes(proyId);
+    openModal("modal-nota");
+  };
+
+  function cargarNotasRecientes(proyId) {
+    const contenedor = document.getElementById("notas-historial");
+    contenedor.innerHTML = `<div style="color:var(--hint);font-size:12px">Cargando…</div>`;
+    const q = query(
+      collection(db, "notas"),
+      where("proyectoId", "==", proyId),
+      orderBy("creadoEn", "desc")
+    );
+    getDocs(q).then(snap => {
+      if (snap.empty) {
+        contenedor.innerHTML = `<div style="color:var(--hint);font-size:12px">Sin notas aún.</div>`;
+        return;
+      }
+      contenedor.innerHTML = snap.docs.slice(0,5).map(d => {
+        const n   = d.data();
+        const rag = n.ragEstado || "";
+        const dot = rag === "verde" ? "var(--green)" : rag === "rojo" ? "var(--red)" : "var(--amber)";
+        const fecha = n.creadoEn?.toDate
+              ? n.creadoEn.toDate().toLocaleDateString("es-MX",{day:"numeric",month:"short"})
+              : "";
+        return `<div class="nota-card ${n.tipo||""}">
+          <div class="nota-header">
+            <div style="width:7px;height:7px;border-radius:50%;background:${dot};flex-shrink:0"></div>
+            <span style="font-size:11px;font-weight:500;color:var(--muted)">${n.autorNombre||""}</span>
+            <span style="font-size:11px;color:var(--hint);margin-left:auto">${fecha}</span>
+          </div>
+          <div class="nota-texto">${n.texto||""}</div>
+        </div>`;
+      }).join("");
+    }).catch(() => {
+      contenedor.innerHTML = `<div style="color:var(--hint);font-size:12px">Sin notas aún.</div>`;
+    });
+  }
+
+  window.guardarNota = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const proyId   = document.getElementById("nota-proyecto-id").value;
+    const texto    = document.getElementById("nota-texto").value.trim();
+    const ragEl    = document.querySelector("#modal-nota .rag-opt[class*='sel-']");
+    const ragEstado = ragEl ? ragEl.dataset.rag : "verde";
+    const tipoEl   = document.querySelector("#modal-nota #nota-chips .chip.sel");
+    const tipo     = tipoEl ? tipoEl.dataset.tipo : "seguimiento";
+
+    if (!texto) { alert("Escribe algo en la nota."); return; }
+    if (!proyId) { alert("Selecciona un proyecto."); return; }
+
+    const btnGuardar = document.getElementById("btn-guardar-nota");
+    btnGuardar.textContent = "Guardando…"; btnGuardar.disabled = true;
+
+    try {
+      const batch = writeBatch(db);
+
+      const notaRef = doc(collection(db, "notas"));
+      batch.set(notaRef, {
+        proyectoId:   proyId,
+        autorId:      u.uid,
+        autorNombre:  u.nombre,
+        texto,
+        tipo,
+        ragEstado,
+        ragCambio:    false,
+        creadoEn:     serverTimestamp()
+      });
+
+      const proyRef = doc(db, "proyectos", proyId);
+      batch.update(proyRef, {
+        ragEstado,
+        ultimaNota: serverTimestamp()
+      });
+
+      await batch.commit();
+      closeModal("modal-nota");
+    } catch(e) {
+      console.error(e);
+      alert("Error al guardar la nota.");
+    } finally {
+      btnGuardar.textContent = "Guardar nota"; btnGuardar.disabled = false;
+    }
+  };
 
   function show(id) { document.getElementById(id).classList.remove("hidden"); }
   function hide(id) { document.getElementById(id).classList.add("hidden"); }
@@ -1652,6 +1792,11 @@
   }
 
   function togChip(el) { el.classList.toggle("sel"); }
+
+  function togChipSingle(el) {
+    el.closest(".chip-group").querySelectorAll(".chip").forEach(c => c.classList.remove("sel"));
+    el.classList.add("sel");
+  }
 
   // Cerrar modal al clicar overlay
   document.querySelectorAll(".modal-overlay").forEach(overlay => {

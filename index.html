@@ -554,7 +554,7 @@
     transition: all .12s;
   }
 
-  .btn-sm:hover { background: var(--bg3); color: var(--text); }
+  .btn-sm.active { background: var(--bg3); color: var(--text); border-color: var(--border2); }
 
   .btn-primary {
     font-size: 13px;
@@ -1202,9 +1202,25 @@
       <div class="page" id="page-proyectos">
         <div class="section-header" style="margin-bottom:1rem">
           <span class="section-title">Proyectos</span>
-          <button class="btn-primary" onclick="openModal('modal-proyecto')">+ Nuevo proyecto</button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="btn-sm proy-filter active" onclick="filtrarProyectos(this,'todos')">Todos</button>
+            <button class="btn-sm proy-filter" onclick="filtrarProyectos(this,'verde')">Verde</button>
+            <button class="btn-sm proy-filter" onclick="filtrarProyectos(this,'amarillo')">Amarillo</button>
+            <button class="btn-sm proy-filter" onclick="filtrarProyectos(this,'rojo')">Rojo</button>
+            <button class="btn-primary" onclick="openModal('modal-proyecto')">+ Nuevo proyecto</button>
+          </div>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción — los datos se cargarán desde Firestore.</p>
+        <div class="projects-list" id="proyectos-lista-full">
+          <div class="proj-row header">
+            <div></div>
+            <div>Proyecto / cliente</div>
+            <div>Tipo</div>
+            <div>Horas</div>
+            <div>Lead</div>
+            <div>Cierre</div>
+          </div>
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando…</div>
+        </div>
       </div>
 
       <!-- ── ASIGNACIONES ── -->
@@ -1553,17 +1569,25 @@
   }
 
   function renderProyectos(proyectos) {
-    const lista = document.getElementById("proyectos-lista");
+    renderListaProyectos(proyectos, "proyectos-lista");
+    renderListaProyectos(proyectos, "proyectos-lista-full");
+  }
+
+  function renderListaProyectos(proyectos, containerId) {
+    const lista = document.getElementById(containerId);
     if (!lista) return;
 
+    // mantener header si existe
+    const header = lista.querySelector(".proj-row.header");
+
     if (proyectos.length === 0) {
-      lista.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">
-        Sin proyectos aún — crea el primero con el botón +
-      </div>`;
+      const empty = `<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">
+        Sin proyectos — crea el primero con el botón +</div>`;
+      lista.innerHTML = (header ? header.outerHTML : "") + empty;
       return;
     }
 
-    lista.innerHTML = proyectos.map(p => {
+    const rows = proyectos.map(p => {
       const pct      = p.horasVendidas && p.horasConsumidas
                        ? Math.round((p.horasConsumidas / p.horasVendidas) * 100)
                        : null;
@@ -1581,8 +1605,10 @@
       const pctTxt   = pct !== null ? `${pct}%` : "—";
       const barW     = pct !== null ? Math.min(pct, 100) : 0;
       const vencido  = p.fechaCierre && new Date(p.fechaCierre) < new Date();
+      const nombre   = (p.nombre || "Sin nombre").replace(/'/g, "\\'");
 
-      return `<div class="proj-row" onclick="abrirNota('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}')">
+      return `<div class="proj-row" data-rag="${ragClass}"
+                onclick="abrirNota('${p.id}','${nombre}')">
         <div class="rag-dot ${ragClass}"></div>
         <div>
           <div class="proj-name">${p.nombre || "Sin nombre"}</div>
@@ -1597,6 +1623,8 @@
         <div style="font-size:11px;color:${vencido?"var(--red)":"var(--muted)"};font-family:var(--mono)">${vencido?"Vencido":cierre}</div>
       </div>`;
     }).join("");
+
+    lista.innerHTML = (header ? header.outerHTML : "") + rows;
   }
 
   // ── CREAR PROYECTO ──
@@ -1797,6 +1825,16 @@
     el.closest(".chip-group").querySelectorAll(".chip").forEach(c => c.classList.remove("sel"));
     el.classList.add("sel");
   }
+
+  window.filtrarProyectos = (btn, rag) => {
+    document.querySelectorAll(".proy-filter").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const lista = document.getElementById("proyectos-lista-full");
+    if (!lista) return;
+    lista.querySelectorAll(".proj-row:not(.header)").forEach(row => {
+      row.style.display = (rag === "todos" || row.dataset.rag === rag) ? "" : "none";
+    });
+  };
 
   // Cerrar modal al clicar overlay
   document.querySelectorAll(".modal-overlay").forEach(overlay => {

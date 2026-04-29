@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASAP Bits Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0f0f10;
+    --bg2:       #17171a;
+    --bg3:       #1e1e23;
+    --border:    rgba(255,255,255,.07);
+    --border2:   rgba(255,255,255,.12);
+    --text:      #e8e6e1;
+    --muted:     #7a7875;
+    --hint:      #4a4845;
+    --accent:    #5b6af0;
+    --accent2:   #7b8cf7;
+    --green:     #22c55e;
+    --amber:     #f59e0b;
+    --red:       #ef4444;
+    --green-bg:  rgba(34,197,94,.1);
+    --amber-bg:  rgba(245,158,11,.1);
+    --red-bg:    rgba(239,68,68,.1);
+    --font:      'DM Sans', sans-serif;
+    --mono:      'DM Mono', monospace;
+    --radius:    10px;
+    --radius-lg: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--hint); border-radius: 2px; }
+
+  /* ══════════════════════════════════
+     LOGIN SCREEN
+  ══════════════════════════════════ */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #login-screen::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,106,240,.12) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    pointer-events: none;
+  }
+
+  #login-screen::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,106,240,.08) 0%, transparent 70%);
+    bottom: -50px; right: 50px;
+    pointer-events: none;
+  }
+
+  .login-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp .4s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+  }
+
+  .login-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: -.5px;
+    flex-shrink: 0;
+  }
+
+  .login-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .login-logo-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.2px;
+  }
+
+  .login-logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .login-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.4px;
+    margin-bottom: .5rem;
+  }
+
+  .login-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+
+  .btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 11px 20px;
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    text-decoration: none;
+  }
+
+  .btn-google:hover {
+    background: var(--border);
+    border-color: rgba(255,255,255,.2);
+  }
+
+  .btn-google:active { transform: scale(.98); }
+
+  .btn-google svg { flex-shrink: 0; }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.5rem 0;
+    color: var(--hint);
+    font-size: 12px;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  .login-note {
+    font-size: 12px;
+    color: var(--hint);
+    text-align: center;
+    margin-top: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .login-note strong { color: var(--muted); font-weight: 500; }
+
+  .login-error {
+    background: var(--red-bg);
+    border: 0.5px solid rgba(239,68,68,.25);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #fca5a5;
+    margin-bottom: 1rem;
+    display: none;
+  }
+
+  /* ══════════════════════════════════
+     PENDING SCREEN
+  ══════════════════════════════════ */
+  #pending-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .pending-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    animation: fadeUp .3s ease;
+  }
+
+  .pending-icon {
+    width: 48px; height: 48px;
+    background: var(--amber-bg);
+    border: 0.5px solid rgba(245,158,11,.25);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    font-size: 22px;
+  }
+
+  /* ══════════════════════════════════
+     APP LAYOUT
+  ══════════════════════════════════ */
+  #app {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg2);
+    border-right: 0.5px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 1.25rem 1rem 1rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-logo-mark {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.2px;
+  }
+
+  .sidebar-logo-sub {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 400;
+    display: block;
+    letter-spacing: 0;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: .75rem .5rem;
+  }
+
+  .nav-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--hint);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 0 .5rem;
+    margin-bottom: .375rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .12s;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+    user-select: none;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: var(--font);
+  }
+
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+
+  .nav-item.active {
+    background: rgba(91,106,240,.15);
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .nav-item svg { flex-shrink: 0; opacity: .7; }
+  .nav-item.active svg { opacity: 1; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .sidebar-user {
+    padding: .75rem 1rem;
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .user-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+    background: rgba(91,106,240,.2);
+    color: var(--accent2);
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+
+  .user-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-role {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: capitalize;
+  }
+
+  .btn-signout {
+    background: transparent;
+    border: none;
+    color: var(--hint);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color .12s;
+    display: flex;
+  }
+
+  .btn-signout:hover { color: var(--muted); }
+
+  /* MAIN CONTENT */
+  #main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    height: 52px;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    gap: 12px;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.2px;
+  }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-icon {
+    width: 32px; height: 32px;
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all .12s;
+  }
+
+  .btn-icon:hover { background: var(--bg3); color: var(--text); }
+
+  .content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  /* ══════════════════════════════════
+     DASHBOARD
+  ══════════════════════════════════ */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+
+  .metric-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -.5px;
+    line-height: 1;
+    font-family: var(--mono);
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--hint);
+    margin-top: 4px;
+  }
+
+  .metric-card.m-green .metric-value { color: var(--green); }
+  .metric-card.m-amber .metric-value { color: var(--amber); }
+  .metric-card.m-red   .metric-value { color: var(--red); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .btn-sm {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 7px;
+    border: 0.5px solid var(--border2);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all .12s;
+  }
+
+  .btn-sm:hover { background: var(--bg3); color: var(--text); }
+
+  .btn-primary {
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-family: var(--font);
+    font-weight: 500;
+    transition: all .12s;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  /* PROJECTS TABLE */
+  .projects-list {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .proj-row {
+    display: grid;
+    grid-template-columns: 16px 1fr 100px 80px 80px 80px;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 16px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+
+  .proj-row:last-child { border-bottom: none; }
+  .proj-row:hover { background: var(--bg3); }
+
+  .proj-row.header {
+    font-size: 11px;
+    color: var(--hint);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    cursor: default;
+    background: transparent !important;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .rag-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .rag-dot.verde  { background: var(--green); box-shadow: 0 0 0 2px var(--green-bg); }
+  .rag-dot.amarillo { background: var(--amber); box-shadow: 0 0 0 2px var(--amber-bg); }
+  .rag-dot.rojo   { background: var(--red);   box-shadow: 0 0 0 2px var(--red-bg); }
+
+  .proj-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .proj-client {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 400;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .tag-impl  { background: rgba(91,106,240,.15); color: #9ba4fb; }
+  .tag-sop   { background: rgba(34,197,94,.1);  color: #4ade80; }
+  .tag-staff { background: rgba(245,158,11,.1); color: #fcd34d; }
+
+  .pct-bar-wrap { width: 100%; }
+
+  .pct-bar-bg {
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+
+  .pct-bar-fill {
+    height: 3px;
+    border-radius: 2px;
+    transition: width .3s;
+  }
+
+  .pct-text { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  /* GRID 2 cols */
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1.25rem;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+  }
+
+  /* ACTIVITY FEED */
+  .activity-item {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 12px;
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+
+  .activity-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(91,106,240,.2);
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .activity-text { color: var(--muted); line-height: 1.4; }
+  .activity-text strong { color: var(--text); font-weight: 500; }
+  .activity-time { font-size: 11px; color: var(--hint); margin-top: 2px; }
+
+  /* CAPACITY */
+  .capacity-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .capacity-item:last-child { border-bottom: none; }
+
+  .cap-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .cap-name { font-size: 12px; font-weight: 500; color: var(--text); flex: 1; }
+  .cap-pct  { font-size: 11px; font-family: var(--mono); color: var(--muted); min-width: 36px; text-align: right; }
+
+  .cap-bar-bg {
+    width: 70px;
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .cap-bar-fill { height: 3px; border-radius: 2px; }
+
+  /* ══════════════════════════════════
+     CONSULTOR VIEW
+  ══════════════════════════════════ */
+  .consultor-hero {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .alert-banner {
+    background: var(--amber-bg);
+    border: 0.5px solid rgba(245,158,11,.2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #fcd34d;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ══════════════════════════════════
+     MODAL
+  ══════════════════════════════════ */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fadeUp .2s ease;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    letter-spacing: -.2px;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 5px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font);
+    outline: none;
+    transition: border .12s;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus { border-color: rgba(91,106,240,.5); }
+
+  .field select option { background: var(--bg3); }
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .rag-sel { display: flex; gap: 6px; }
+
+  .rag-opt {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border2);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    transition: all .12s;
+    background: var(--bg3);
+    color: var(--muted);
+    font-family: var(--font);
+  }
+
+  .rag-opt.sel-verde  { background: var(--green-bg); border-color: rgba(34,197,94,.3); color: var(--green); }
+  .rag-opt.sel-amarillo { background: var(--amber-bg); border-color: rgba(245,158,11,.3); color: var(--amber); }
+  .rag-opt.sel-rojo   { background: var(--red-bg);   border-color: rgba(239,68,68,.3);  color: var(--red); }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .chip {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    cursor: pointer;
+    color: var(--muted);
+    background: transparent;
+    transition: all .12s;
+    font-family: var(--font);
+  }
+
+  .chip.sel {
+    background: rgba(91,106,240,.15);
+    border-color: rgba(91,106,240,.35);
+    color: var(--accent2);
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 1.25rem;
+    justify-content: flex-end;
+  }
+
+  /* LOADER */
+  #loader {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spinner {
+    width: 24px; height: 24px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* HIDDEN */
+  .hidden { display: none !important; }
+
+  /* ROLE BADGE */
+  .role-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+
+  .role-admin   { background: rgba(91,106,240,.15); color: var(--accent2); }
+  .role-pmo     { background: rgba(34,197,94,.1);  color: #4ade80; }
+  .role-consultor { background: rgba(245,158,11,.1); color: #fcd34d; }
+  .role-readonly  { background: var(--bg3); color: var(--muted); }
+
+  /* NOTA CARD */
+  .nota-card {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-left: 2px solid transparent;
+  }
+
+  .nota-card.bloqueador { border-left-color: var(--red); }
+  .nota-card.riesgo     { border-left-color: var(--amber); }
+  .nota-card.hito       { border-left-color: var(--green); }
+
+  .nota-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  .nota-texto { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .nota-meta  { font-size: 11px; color: var(--hint); margin-top: 4px; }
+
+  @media (max-width: 768px) {
+    #sidebar { display: none; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+    .proj-row { grid-template-columns: 16px 1fr 60px; }
+    .proj-row > *:nth-child(n+4) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="spinner"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="hidden">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">AB</div>
+      <div class="login-logo-text">
+        <span class="login-logo-name">ASAP Bits</span>
+        <span class="login-logo-sub">Hub — gestión operativa</span>
+      </div>
+    </div>
+    <h1 class="login-title">Bienvenido</h1>
+    <p class="login-desc">Inicia sesión con tu cuenta <strong style="color:var(--muted)">@asapbits.com</strong> para continuar.</p>
+    <div id="login-error" class="login-error"></div>
+    <button class="btn-google" onclick="signInGoogle()">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        <path fill="none" d="M0 0h48v48H0z"/>
+      </svg>
+      Entrar con Google
+    </button>
+    <p class="login-note">Solo cuentas <strong>@asapbits.com</strong> tienen acceso.<br>Si eres colaborador externo contacta al admin.</p>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div id="pending-screen" class="hidden">
+  <div class="pending-card">
+    <div class="pending-icon">⏳</div>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:.5rem;letter-spacing:-.2px">Acceso pendiente</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6">Tu cuenta está registrada pero aún no tiene un rol asignado. Luis o Héctor activarán tu acceso en breve.</p>
+    <p id="pending-email" style="font-size:12px;color:var(--hint);margin-bottom:1.5rem;font-family:var(--mono)"></p>
+    <button class="btn-sm" onclick="signOut()" style="width:100%;justify-content:center">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo-mark">AB</div>
+      <div>
+        <div class="sidebar-logo-text">ASAP Bits</div>
+        <span class="sidebar-logo-sub">Hub</span>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section" id="nav-admin-ops">
+        <div class="nav-section-label">General</div>
+        <button class="nav-item active" onclick="navTo('dashboard', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item" onclick="navTo('proyectos', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+          Proyectos
+          <span class="nav-badge" id="badge-rojo">1</span>
+        </button>
+        <button class="nav-item" onclick="navTo('asignaciones', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4"/><path d="M16 11l2 2 4-4"/></svg>
+          Asignaciones
+        </button>
+        <button class="nav-item" onclick="navTo('tareas', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Tareas e hitos
+        </button>
+      </div>
+
+      <div class="nav-section" id="nav-admin-only">
+        <div class="nav-section-label">Admin</div>
+        <button class="nav-item" onclick="navTo('pipeline', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Pipeline
+        </button>
+        <button class="nav-item" onclick="navTo('equipo', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><circle cx="19" cy="7" r="2"/><path d="M23 21v-1a2 2 0 00-2-2h-1"/></svg>
+          Equipo
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-label">Reportes</div>
+        <button class="nav-item" onclick="navTo('timesheets', this)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Timesheets
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">LH</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-name">Luis H.</div>
+        <div class="user-role" id="sidebar-role">admin</div>
+      </div>
+      <button class="btn-signout" onclick="signOut()" title="Cerrar sesión">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-right">
+        <button class="btn-icon" title="Nuevo proyecto" onclick="openModal('modal-proyecto')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Proyectos activos</div>
+            <div class="metric-value">5</div>
+            <div class="metric-sub">2 cierran este mes</div>
+          </div>
+          <div class="metric-card m-green">
+            <div class="metric-label">En verde</div>
+            <div class="metric-value">2</div>
+            <div class="metric-sub">En tiempo y presupuesto</div>
+          </div>
+          <div class="metric-card m-amber">
+            <div class="metric-label">En amarillo</div>
+            <div class="metric-value">2</div>
+            <div class="metric-sub">Riesgo identificado</div>
+          </div>
+          <div class="metric-card m-red">
+            <div class="metric-label">En rojo</div>
+            <div class="metric-value">1</div>
+            <div class="metric-sub">Requiere atención</div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <span class="section-title">Proyectos</span>
+          <button class="btn-sm" onclick="navTo('proyectos', null)">Ver todos →</button>
+        </div>
+
+        <div class="projects-list">
+          <div class="proj-row header">
+            <div></div>
+            <div>Proyecto / cliente</div>
+            <div>Tipo</div>
+            <div>Horas</div>
+            <div>Lead</div>
+            <div>Cierre</div>
+          </div>
+          <div class="proj-row" onclick="openNota('p1')">
+            <div class="rag-dot verde"></div>
+            <div>
+              <div class="proj-name">S/4HANA FI — Grupo Norteño</div>
+              <div class="proj-client">Mario · Adrian · Andrés</div>
+            </div>
+            <span class="tag tag-impl">Impl.</span>
+            <div class="pct-bar-wrap">
+              <div class="pct-text">62%</div>
+              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:62%;background:var(--green)"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">MA</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Jun 25</div>
+          </div>
+          <div class="proj-row" onclick="openNota('p2')">
+            <div class="rag-dot amarillo"></div>
+            <div>
+              <div class="proj-name">CPI Integration — TexMaq</div>
+              <div class="proj-client">Francisco · David</div>
+            </div>
+            <span class="tag tag-impl">Impl.</span>
+            <div class="pct-bar-wrap">
+              <div class="pct-text">85%</div>
+              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:85%;background:var(--amber)"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">FR</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">May 25</div>
+          </div>
+          <div class="proj-row" onclick="openNota('p3')">
+            <div class="rag-dot rojo"></div>
+            <div>
+              <div class="proj-name">HCM Payroll — Constructora Alva</div>
+              <div class="proj-client">Héctor</div>
+            </div>
+            <span class="tag tag-impl">Impl.</span>
+            <div class="pct-bar-wrap">
+              <div class="pct-text" style="color:var(--red)">103%</div>
+              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:100%;background:var(--red)"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">HM</div>
+            <div style="font-size:11px;color:var(--red);font-family:var(--mono)">Vencido</div>
+          </div>
+          <div class="proj-row" onclick="openNota('p4')">
+            <div class="rag-dot verde"></div>
+            <div>
+              <div class="proj-name">ABAP Custom — Industriales del Norte</div>
+              <div class="proj-client">Kevin · Luis</div>
+            </div>
+            <span class="tag tag-impl">Impl.</span>
+            <div class="pct-bar-wrap">
+              <div class="pct-text">38%</div>
+              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:38%;background:var(--green)"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">LH</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Jul 25</div>
+          </div>
+          <div class="proj-row" onclick="openNota('p5')">
+            <div class="rag-dot amarillo"></div>
+            <div>
+              <div class="proj-name">MM/SD Soporte — Metalúrgica REX</div>
+              <div class="proj-client">Adrian</div>
+            </div>
+            <span class="tag tag-sop">Soporte</span>
+            <div class="pct-bar-wrap">
+              <div class="pct-text">71%</div>
+              <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:71%;background:var(--amber)"></div></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted)">AD</div>
+            <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">Rolling</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="section-header" style="margin-bottom:10px">
+              <span class="section-title">Actividad reciente</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar">FR</div>
+              <div>
+                <div class="activity-text"><strong>Francisco</strong> actualizó CPI TexMaq a <span style="color:var(--amber)">amarillo</span></div>
+                <div class="activity-time">hace 2 horas</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar">MA</div>
+              <div>
+                <div class="activity-text"><strong>Mario</strong> completó hito "Blueprint aprobado" en Grupo Norteño</div>
+                <div class="activity-time">hace 5 horas</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar">HM</div>
+              <div>
+                <div class="activity-text"><strong>Héctor</strong> escaló HCM Alva a <span style="color:var(--red)">rojo</span> — bloqueador activo</div>
+                <div class="activity-time">ayer</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-avatar">AD</div>
+              <div>
+                <div class="activity-text"><strong>Adrian</strong> registró 12h en MM/SD Metalúrgica REX</div>
+                <div class="activity-time">ayer</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header" style="margin-bottom:10px">
+              <span class="section-title">Capacidad del equipo</span>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(91,106,240,.15);color:var(--accent2)">LH</div>
+              <div class="cap-name">Luis</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:50%;background:var(--green)"></div></div>
+              <div class="cap-pct">50%</div>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(91,106,240,.15);color:var(--accent2)">HM</div>
+              <div class="cap-name">Héctor</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:100%;background:var(--red)"></div></div>
+              <div class="cap-pct" style="color:var(--red)">100%</div>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(34,197,94,.1);color:#4ade80">MA</div>
+              <div class="cap-name">Mario</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:80%;background:var(--amber)"></div></div>
+              <div class="cap-pct">80%</div>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(245,158,11,.1);color:#fcd34d">KV</div>
+              <div class="cap-name">Kevin</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:50%;background:var(--green)"></div></div>
+              <div class="cap-pct">50%</div>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(239,68,68,.1);color:#f87171">AD</div>
+              <div class="cap-name">Adrian</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:100%;background:var(--red)"></div></div>
+              <div class="cap-pct" style="color:var(--red)">100%</div>
+            </div>
+            <div class="capacity-item">
+              <div class="cap-avatar" style="background:rgba(91,106,240,.1);color:#a5b4fc">FR</div>
+              <div class="cap-name">Francisco</div>
+              <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:100%;background:var(--red)"></div></div>
+              <div class="cap-pct" style="color:var(--red)">100%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROYECTOS ── -->
+      <div class="page" id="page-proyectos">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Proyectos</span>
+          <button class="btn-primary" onclick="openModal('modal-proyecto')">+ Nuevo proyecto</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción — los datos se cargarán desde Firestore.</p>
+      </div>
+
+      <!-- ── ASIGNACIONES ── -->
+      <div class="page" id="page-asignaciones">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Asignaciones</span>
+          <button class="btn-primary" onclick="openModal('modal-asignacion')">+ Nueva asignación</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+      </div>
+
+      <!-- ── TAREAS ── -->
+      <div class="page" id="page-tareas">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Tareas e hitos</span>
+          <button class="btn-primary">+ Nueva tarea</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+      </div>
+
+      <!-- ── PIPELINE ── -->
+      <div class="page" id="page-pipeline">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Pipeline comercial</span>
+          <button class="btn-primary">+ Nueva oportunidad</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+      </div>
+
+      <!-- ── EQUIPO ── -->
+      <div class="page" id="page-equipo">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Equipo</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+      </div>
+
+      <!-- ── TIMESHEETS ── -->
+      <div class="page" id="page-timesheets">
+        <div class="section-header" style="margin-bottom:1rem">
+          <span class="section-title">Timesheets</span>
+          <button class="btn-primary">+ Registrar horas</button>
+        </div>
+        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NOTA RÁPIDA ══════ -->
+<div class="modal-overlay" id="modal-nota">
+  <div class="modal">
+    <div class="modal-title">Nota / actualización de estatus</div>
+    <div class="field">
+      <label>Proyecto</label>
+      <select id="nota-proyecto">
+        <option>S/4HANA FI — Grupo Norteño</option>
+        <option>CPI Integration — TexMaq</option>
+        <option>HCM Payroll — Constructora Alva</option>
+        <option>ABAP Custom — Industriales del Norte</option>
+        <option>MM/SD Soporte — Metalúrgica REX</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Estatus RAG</label>
+      <div class="rag-sel">
+        <button class="rag-opt sel-verde" onclick="selRag(this,'verde')">Verde</button>
+        <button class="rag-opt" onclick="selRag(this,'amarillo')">Amarillo</button>
+        <button class="rag-opt" onclick="selRag(this,'rojo')">Rojo</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Tipo de nota</label>
+      <div class="chip-group">
+        <button class="chip sel" onclick="togChip(this)">Seguimiento</button>
+        <button class="chip" onclick="togChip(this)">Acuerdo cliente</button>
+        <button class="chip" onclick="togChip(this)">Bloqueador</button>
+        <button class="chip" onclick="togChip(this)">Hito completado</button>
+        <button class="chip" onclick="togChip(this)">Riesgo</button>
+        <button class="chip" onclick="togChip(this)">Acción interna</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Nota</label>
+      <textarea placeholder="¿Qué pasó esta semana? Avances, bloqueadores, acuerdos con el cliente…" rows="4"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-nota')">Cancelar</button>
+      <button class="btn-primary" onclick="closeModal('modal-nota')">Guardar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NUEVO PROYECTO ══════ -->
+<div class="modal-overlay" id="modal-proyecto">
+  <div class="modal">
+    <div class="modal-title">Nuevo proyecto</div>
+    <div class="field">
+      <label>Nombre del proyecto</label>
+      <input type="text" placeholder="ej. S/4HANA FI — Grupo Norteño">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Cliente</label>
+        <input type="text" placeholder="Razón social">
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select>
+          <option>Implementación</option>
+          <option>Soporte / AMS</option>
+          <option>Staffing</option>
+          <option>Desarrollo</option>
+          <option>Consultoría puntual</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Inicio</label>
+        <input type="date">
+      </div>
+      <div class="field">
+        <label>Cierre estimado</label>
+        <input type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Módulos SAP</label>
+      <div class="chip-group">
+        <button class="chip" onclick="togChip(this)">FI</button>
+        <button class="chip" onclick="togChip(this)">CO</button>
+        <button class="chip" onclick="togChip(this)">MM</button>
+        <button class="chip" onclick="togChip(this)">SD</button>
+        <button class="chip" onclick="togChip(this)">HCM</button>
+        <button class="chip" onclick="togChip(this)">ABAP</button>
+        <button class="chip" onclick="togChip(this)">BTP</button>
+        <button class="chip" onclick="togChip(this)">CPI</button>
+        <button class="chip" onclick="togChip(this)">Fiori</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-proyecto')">Cancelar</button>
+      <button class="btn-primary" onclick="closeModal('modal-proyecto')">Crear proyecto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NUEVA ASIGNACIÓN ══════ -->
+<div class="modal-overlay" id="modal-asignacion">
+  <div class="modal">
+    <div class="modal-title">Nueva asignación</div>
+    <div class="row2">
+      <div class="field">
+        <label>Proyecto</label>
+        <select>
+          <option>S/4HANA FI — Grupo Norteño</option>
+          <option>CPI Integration — TexMaq</option>
+          <option>HCM Payroll — Constructora Alva</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Consultor</label>
+        <select>
+          <option>Luis Hinojosa</option>
+          <option>Héctor Medrano</option>
+          <option>Mario</option>
+          <option>Kevin</option>
+          <option>Adrian</option>
+          <option>Andrés</option>
+          <option>Francisco</option>
+          <option>David</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>% Dedicación</label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" min="10" max="100" step="10" value="50" id="pct-slider"
+          oninput="document.getElementById('pct-out').textContent=this.value+'%'"
+          style="flex:1">
+        <span id="pct-out" style="font-family:var(--mono);font-size:16px;font-weight:500;min-width:40px;text-align:right">50%</span>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>Inicio</label>
+        <input type="date">
+      </div>
+      <div class="field">
+        <label>Fin estimado</label>
+        <input type="date">
+      </div>
+    </div>
+    <div class="field">
+      <label>Rol en el proyecto</label>
+      <select>
+        <option>Lead funcional</option>
+        <option>Lead técnico</option>
+        <option>Consultor funcional</option>
+        <option>Desarrollador ABAP</option>
+        <option>Integrador CPI/BTP</option>
+        <option>PMO / Coordinación</option>
+        <option>Soporte / AMS</option>
+        <option>Subcontratista</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-asignacion')">Cancelar</button>
+      <button class="btn-primary" onclick="closeModal('modal-asignacion')">Crear asignación</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ FIREBASE ══════ -->
+<script type="module">
+  import { initializeApp }                    from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider,
+           signInWithPopup, signOut as fbSignOut,
+           onAuthStateChanged }               from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc,
+           setDoc, serverTimestamp }          from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+  // ── REEMPLAZA CON TUS CREDENCIALES ──
+  const firebaseConfig = {
+    apiKey:            "AIzaSyC2ihs32DL8SA0bPxf8MZmr5jncm5w4x2c",
+    authDomain:        "asap-bits-hub.firebaseapp.com",
+    projectId:         "asap-bits-hub",
+    storageBucket:     "asap-bits-hub.firebasestorage.app",
+    messagingSenderId: "324970482626",
+    appId:             "1:324970482626:web:15a3df93e286ac0fc8245b",
+    measurementId:     "G-Q48H0PFY1Q"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  const ALLOWED_DOMAIN = "asapbits.com";
+
+  // ── EXPONER GLOBALES ──
+  window._auth = auth;
+  window._db   = db;
+
+  window.signInGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ hd: ALLOWED_DOMAIN });
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const email  = result.user.email;
+      if (!email.endsWith("@" + ALLOWED_DOMAIN)) {
+        await fbSignOut(auth);
+        showLoginError("Solo cuentas @" + ALLOWED_DOMAIN + " tienen acceso.");
+      }
+    } catch (e) {
+      if (e.code !== "auth/popup-closed-by-user") {
+        showLoginError("Error al iniciar sesión. Intenta de nuevo.");
+      }
+    }
+  };
+
+  window.signOut = async () => {
+    await fbSignOut(auth);
+  };
+
+  function showLoginError(msg) {
+    const el = document.getElementById("login-error");
+    el.textContent = msg;
+    el.style.display = "block";
+  }
+
+  // ── AUTH STATE ──
+  onAuthStateChanged(auth, async (user) => {
+    hide("loader");
+    if (!user) {
+      show("login-screen"); hide("app"); hide("pending-screen");
+      return;
+    }
+
+    // Obtener o crear doc de usuario en Firestore
+    const userRef  = doc(db, "usuarios", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      // Primera vez — crear doc sin rol
+      await setDoc(userRef, {
+        uid:       user.uid,
+        nombre:    user.displayName || user.email.split("@")[0],
+        email:     user.email,
+        rol:       null,
+        activo:    true,
+        creadoEn:  serverTimestamp()
+      });
+    }
+
+    const userData = userSnap.exists() ? userSnap.data() : { rol: null };
+    const rol      = userData.rol;
+
+    if (!rol) {
+      // Sin rol — pantalla de pendiente
+      hide("login-screen"); hide("app");
+      show("pending-screen");
+      document.getElementById("pending-email").textContent = user.email;
+      return;
+    }
+
+    // Tiene rol — mostrar app
+    hide("login-screen"); hide("pending-screen");
+    show("app");
+    initApp(user, userData);
+  });
+
+  function initApp(user, userData) {
+    const rol = userData.rol;
+
+    // Avatar y nombre en sidebar
+    const nombre    = userData.nombre || user.email.split("@")[0];
+    const iniciales = nombre.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase();
+    document.getElementById("sidebar-avatar").textContent = iniciales;
+    document.getElementById("sidebar-name").textContent   = nombre.split(" ")[0];
+    document.getElementById("sidebar-role").textContent   = rol;
+
+    // Ajuste de nav por rol
+    if (rol === "consultor" || rol === "readonly") {
+      document.getElementById("nav-admin-only").style.display = "none";
+    }
+    if (rol === "readonly") {
+      document.getElementById("nav-admin-ops").style.display = "none";
+    }
+  }
+
+  function show(id) { document.getElementById(id).classList.remove("hidden"); }
+  function hide(id) { document.getElementById(id).classList.add("hidden"); }
+</script>
+
+<!-- ══════ UI JS ══════ -->
+<script>
+  const pages = ["dashboard","proyectos","asignaciones","tareas","pipeline","equipo","timesheets"];
+  const titles = {
+    dashboard:   "Dashboard",
+    proyectos:   "Proyectos",
+    asignaciones:"Asignaciones",
+    tareas:      "Tareas e hitos",
+    pipeline:    "Pipeline",
+    equipo:      "Equipo",
+    timesheets:  "Timesheets"
+  };
+
+  function navTo(page, btn) {
+    pages.forEach(p => {
+      const el = document.getElementById("page-" + p);
+      if (el) el.classList.toggle("active", p === page);
+    });
+    document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    document.getElementById("topbar-title").textContent = titles[page] || page;
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+
+  function openNota(proyId) {
+    openModal("modal-nota");
+  }
+
+  function selRag(btn, val) {
+    btn.closest(".rag-sel").querySelectorAll(".rag-opt")
+      .forEach(b => b.className = "rag-opt");
+    btn.classList.add("sel-" + val);
+  }
+
+  function togChip(el) { el.classList.toggle("sel"); }
+
+  // Cerrar modal al clicar overlay
+  document.querySelectorAll(".modal-overlay").forEach(overlay => {
+    overlay.addEventListener("click", e => {
+      if (e.target === overlay) overlay.classList.remove("open");
+    });
+  });
+</script>
+</body>
+</html>

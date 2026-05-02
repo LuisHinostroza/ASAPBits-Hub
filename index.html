@@ -556,6 +556,96 @@
 
   .btn-sm.active { background: var(--bg3); color: var(--text); border-color: var(--border2); }
 
+  /* TIMESHEET DÍAS */
+  .ts-dia {
+    background: var(--bg3);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .ts-dia-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .ts-dia-nombre {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .ts-dia-fecha {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  .ts-horas-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+  .ts-horas-total {
+    font-size: 12px;
+    font-family: var(--mono);
+    font-weight: 500;
+    min-width: 36px;
+    text-align: right;
+  }
+  .ts-bar-bg {
+    width: 60px;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: visible;
+  }
+  .ts-bar-fill {
+    height: 4px;
+    border-radius: 2px;
+    transition: width .2s;
+    max-width: 100%;
+  }
+  .ts-entrada {
+    display: grid;
+    grid-template-columns: 1fr 70px auto;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .ts-entrada select, .ts-entrada input {
+    padding: 6px 8px;
+    font-size: 12px;
+    background: var(--bg2);
+    border: 0.5px solid var(--border2);
+    border-radius: 7px;
+    color: var(--text);
+    font-family: var(--font);
+    outline: none;
+  }
+  .ts-entrada input { text-align: center; }
+  .ts-remove {
+    background: transparent;
+    border: none;
+    color: var(--hint);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color .12s;
+  }
+  .ts-remove:hover { color: var(--red); }
+  .ts-add-btn {
+    font-size: 11px;
+    color: var(--accent2);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    font-family: var(--font);
+  }
+  .ts-add-btn:hover { text-decoration: underline; }
+
   .btn-primary {
     font-size: 13px;
     padding: 8px 16px;
@@ -1487,29 +1577,16 @@
 
 <!-- ══════ MODAL TIMESHEET ══════ -->
 <div class="modal-overlay" id="modal-timesheet">
-  <div class="modal">
-    <div class="modal-title">Registrar horas</div>
-    <div class="row2">
-      <div class="field">
-        <label>Proyecto</label>
-        <select id="ts-proyecto"></select>
-      </div>
-      <div class="field">
-        <label>Semana</label>
-        <input type="week" id="ts-semana">
-      </div>
+  <div class="modal" style="max-width:680px">
+    <div class="modal-title">Registrar horas — semana</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem">
+      <input type="week" id="ts-semana" onchange="generarDiasSemana()" style="font-size:13px;padding:7px 10px;border-radius:8px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font)">
+      <span style="font-size:12px;color:var(--muted)" id="ts-semana-label"></span>
     </div>
-    <div class="field">
-      <label>Horas</label>
-      <input type="number" id="ts-horas" placeholder="ej. 40" min="0.5" max="80" step="0.5">
-    </div>
-    <div class="field">
-      <label>Descripción <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(opcional)</span></label>
-      <textarea id="ts-desc" placeholder="¿Qué se hizo esta semana?" rows="3"></textarea>
-    </div>
+    <div id="ts-dias-container"></div>
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-timesheet')">Cancelar</button>
-      <button class="btn-primary" id="btn-crear-ts" onclick="crearTimesheet()">Guardar horas</button>
+      <button class="btn-primary" id="btn-crear-ts" onclick="guardarSemanaCompleta()">Guardar semana</button>
     </div>
   </div>
 </div>
@@ -1721,12 +1798,15 @@
     cargarTimesheets();
     if (rol === "admin") cargarPipeline();
 
-    // Semana actual en timesheet
-    const hoy   = new Date();
-    const year  = hoy.getFullYear();
-    const week  = String(getWeekNumber(hoy)).padStart(2,"0");
-    const tsEl  = document.getElementById("ts-semana");
-    if (tsEl) tsEl.value = `${year}-W${week}`;
+    // Semana actual en timesheet — se aplica al abrir el modal
+    window._semanaActual = getSemanaActual();
+  }
+
+  function getSemanaActual() {
+    const hoy  = new Date();
+    const year = hoy.getFullYear();
+    const week = String(getWeekNumber(hoy)).padStart(2,"0");
+    return `${year}-W${week}`;
   }
 
   function getWeekNumber(d) {
@@ -2271,15 +2351,17 @@
   };
 
   // ══════════════════════════════════
-  // TIMESHEETS
+  // TIMESHEETS — por día
   // ══════════════════════════════════
+  const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes"];
+
   function cargarTimesheets() {
     const u = window._currentUser;
     if (!u) return;
     const isAdmin = u.rol === "admin" || u.rol === "pmo";
     const q = isAdmin
-      ? query(collection(db,"timesheets"), orderBy("creadoEn","desc"))
-      : query(collection(db,"timesheets"), where("consultorId","==",u.uid), orderBy("creadoEn","desc"));
+      ? query(collection(db,"timesheets"), orderBy("fecha","desc"))
+      : query(collection(db,"timesheets"), where("consultorId","==",u.uid), orderBy("fecha","desc"));
 
     onSnapshot(q, snap => {
       const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2304,56 +2386,184 @@
       bySemana[s].push(t);
     });
 
-    cont.innerHTML = Object.entries(bySemana).map(([semana, rows]) => {
-      const totalHoras = rows.reduce((a,r) => a + (r.horas||0), 0);
-      return `<div class="card" style="margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <span style="font-size:13px;font-weight:500;color:var(--text)">Semana ${semana}</span>
-          <span style="font-size:12px;font-family:var(--mono);color:var(--muted)">${totalHoras}h total</span>
-        </div>
-        ${rows.map(r => {
-          const proy = (window._proyectos||[]).find(p => p.id === r.proyectoId);
-          const u    = EQUIPO.find(e => e.email === r.consultorEmail) || {};
-          const aprobado = r.aprobado ? `<span style="font-size:10px;color:var(--green)">✓</span>` : `<span style="font-size:10px;color:var(--hint)">pendiente</span>`;
-          return `<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px">
-            <div style="width:24px;height:24px;border-radius:50%;background:${u.color||"var(--bg3)"}22;color:${u.color||"var(--muted)"};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">${u.iniciales||"?"}</div>
-            <div style="flex:1;color:var(--muted)">${proy?.nombre||"—"}</div>
-            <div style="font-family:var(--mono);color:var(--text);font-weight:500">${r.horas}h</div>
-            ${aprobado}
+    cont.innerHTML = Object.entries(bySemana)
+      .sort((a,b) => b[0].localeCompare(a[0]))
+      .map(([semana, rows]) => {
+        const totalHoras = rows.reduce((a,r) => a + (r.horas||0), 0);
+
+        // Agrupar por día dentro de la semana
+        const byDia = {};
+        rows.forEach(r => { const d = r.fecha||""; if(!byDia[d]) byDia[d]=[]; byDia[d].push(r); });
+
+        const diasHTML = Object.entries(byDia).sort((a,b)=>a[0].localeCompare(b[0])).map(([fecha, entradas]) => {
+          const d       = new Date(fecha + "T12:00:00");
+          const diaName = d.toLocaleDateString("es-MX",{weekday:"short",day:"numeric",month:"short"});
+          const hDia    = entradas.reduce((a,e) => a + (e.horas||0), 0);
+          const barCol  = hDia >= 8 ? "var(--green)" : hDia >= 4 ? "var(--amber)" : "var(--red)";
+
+          return `<div style="display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border)">
+            <div style="min-width:90px;font-size:11px;color:var(--muted);padding-top:2px">${diaName}</div>
+            <div style="flex:1">
+              ${entradas.map(e => {
+                const proy = (window._proyectos||[]).find(p => p.id === e.proyectoId);
+                const aprov= e.aprobado ? `<span style="color:var(--green);font-size:10px">✓</span>` : "";
+                return `<div style="display:flex;gap:6px;align-items:center;font-size:12px;margin-bottom:3px">
+                  <span style="color:var(--text);flex:1">${proy?.nombre||"—"}</span>
+                  <span style="font-family:var(--mono);color:var(--muted)">${e.horas}h</span>
+                  ${aprov}
+                </div>`;
+              }).join("")}
+            </div>
+            <div style="font-size:12px;font-family:var(--mono);color:${barCol};min-width:28px;text-align:right">${hDia}h</div>
           </div>`;
-        }).join("")}
-      </div>`;
-    }).join("");
+        }).join("");
+
+        return `<div class="card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-size:13px;font-weight:500;color:var(--text)">Semana ${semana}</span>
+            <span style="font-size:12px;font-family:var(--mono);color:var(--muted)">${totalHoras}h total</span>
+          </div>
+          ${diasHTML}
+        </div>`;
+      }).join("");
   }
 
-  window.crearTimesheet = async () => {
+  // ── Genera la UI de días al seleccionar semana ──
+  window.generarDiasSemana = () => {
+    const semanaVal = document.getElementById("ts-semana").value; // "2025-W18"
+    if (!semanaVal) return;
+
+    const [year, wStr] = semanaVal.split("-W");
+    const week = parseInt(wStr);
+
+    // Calcular lunes de esa semana
+    const lunes = getMonday(parseInt(year), week);
+    const label = lunes.toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+    document.getElementById("ts-semana-label").textContent = `Semana del ${label}`;
+
+    const proyectos = window._proyectos || [];
+    const optsProyecto = proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join("");
+
+    const cont = document.getElementById("ts-dias-container");
+    cont.innerHTML = DIAS.map((dia, i) => {
+      const fecha = new Date(lunes);
+      fecha.setDate(lunes.getDate() + i);
+      const fechaStr  = fecha.toISOString().split("T")[0];
+      const fechaLabel= fecha.toLocaleDateString("es-MX",{day:"numeric",month:"short"});
+
+      return `<div class="ts-dia" id="ts-dia-${i}" data-fecha="${fechaStr}" data-semana="${semanaVal}">
+        <div class="ts-dia-header">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="ts-dia-nombre">${dia}</span>
+            <span class="ts-dia-fecha">${fechaLabel}</span>
+          </div>
+          <div class="ts-horas-bar">
+            <div class="ts-bar-bg">
+              <div class="ts-bar-fill" id="ts-bar-${i}" style="width:0%;background:var(--hint)"></div>
+            </div>
+            <span class="ts-horas-total" id="ts-total-${i}" style="color:var(--hint)">0h / 8h</span>
+          </div>
+        </div>
+        <div id="ts-entradas-${i}">
+          <div class="ts-entrada">
+            <select class="ts-proy-sel" data-dia="${i}" onchange="recalcularDia(${i})">
+              <option value="">— Proyecto —</option>
+              ${optsProyecto}
+            </select>
+            <input type="number" class="ts-h-inp" data-dia="${i}" min="0.5" max="8" step="0.5" placeholder="h" oninput="recalcularDia(${i})">
+            <button class="ts-remove" onclick="removeEntrada(this,${i})">×</button>
+          </div>
+        </div>
+        <button class="ts-add-btn" onclick="agregarEntrada(${i},'${optsProyecto.replace(/'/g,"\\'")}')">+ agregar proyecto</button>
+      </div>`;
+    }).join("");
+  };
+
+  window.agregarEntrada = (diaIdx, optsProyecto) => {
+    const cont = document.getElementById(`ts-entradas-${diaIdx}`);
+    const div  = document.createElement("div");
+    div.className = "ts-entrada";
+    div.innerHTML = `<select class="ts-proy-sel" data-dia="${diaIdx}" onchange="recalcularDia(${diaIdx})">
+        <option value="">— Proyecto —</option>${optsProyecto}
+      </select>
+      <input type="number" class="ts-h-inp" data-dia="${diaIdx}" min="0.5" max="8" step="0.5" placeholder="h" oninput="recalcularDia(${diaIdx})">
+      <button class="ts-remove" onclick="removeEntrada(this,${diaIdx})">×</button>`;
+    cont.appendChild(div);
+  };
+
+  window.removeEntrada = (btn, diaIdx) => {
+    btn.closest(".ts-entrada").remove();
+    recalcularDia(diaIdx);
+  };
+
+  window.recalcularDia = (diaIdx) => {
+    const horas = [...document.querySelectorAll(`.ts-h-inp[data-dia="${diaIdx}"]`)]
+      .map(el => parseFloat(el.value) || 0)
+      .reduce((a,b) => a+b, 0);
+
+    const pct    = Math.min((horas/8)*100, 100);
+    const color  = horas > 8 ? "var(--red)" : horas >= 8 ? "var(--green)" : horas >= 4 ? "var(--amber)" : "var(--hint)";
+    const bar    = document.getElementById(`ts-bar-${diaIdx}`);
+    const total  = document.getElementById(`ts-total-${diaIdx}`);
+    if (bar)   { bar.style.width = pct+"%"; bar.style.background = color; }
+    if (total) { total.textContent = `${horas}h / 8h`; total.style.color = color; }
+  };
+
+  function getMonday(year, week) {
+    const d    = new Date(year, 0, 1);
+    const day  = d.getDay();
+    const diff = (week - 1) * 7 - (day <= 4 ? day - 1 : day - 8);
+    d.setDate(d.getDate() + diff);
+    return d;
+  }
+
+  window.guardarSemanaCompleta = async () => {
     const u = window._currentUser;
     if (!u) return;
 
-    const proyId = document.getElementById("ts-proyecto").value;
-    const semana = document.getElementById("ts-semana").value;
-    const horas  = parseFloat(document.getElementById("ts-horas").value);
-    const desc   = document.getElementById("ts-desc").value.trim();
+    const semana  = document.getElementById("ts-semana").value;
+    if (!semana) { alert("Selecciona una semana."); return; }
 
-    if (!proyId || !semana || !horas) { alert("Proyecto, semana y horas son obligatorios."); return; }
+    const email   = EQUIPO.find(e => e.nombre === u.nombre)?.email || "";
+    const entries = [];
+
+    DIAS.forEach((_, i) => {
+      const diaEl  = document.getElementById(`ts-dia-${i}`);
+      if (!diaEl) return;
+      const fecha  = diaEl.dataset.fecha;
+      const proyEls= diaEl.querySelectorAll(".ts-proy-sel");
+      const hEls   = diaEl.querySelectorAll(".ts-h-inp");
+
+      proyEls.forEach((sel, j) => {
+        const proyId = sel.value;
+        const horas  = parseFloat(hEls[j]?.value) || 0;
+        if (proyId && horas > 0) {
+          entries.push({ proyectoId: proyId, fecha, horas });
+        }
+      });
+    });
+
+    if (!entries.length) { alert("No hay entradas con horas para guardar."); return; }
 
     const btn = document.getElementById("btn-crear-ts");
     btn.textContent = "Guardando…"; btn.disabled = true;
 
-    const email = EQUIPO.find(e => e.nombre === u.nombre)?.email || "";
-
     try {
-      const tsId  = `${u.uid}_${proyId}_${semana}`;
-      await setDoc(doc(db,"timesheets",tsId), {
-        consultorId: u.uid, consultorEmail: email,
-        proyectoId: proyId, semana, horas, descripcion: desc,
-        aprobado: false, creadoEn: serverTimestamp()
-      }, { merge: true });
+      const batch = writeBatch(db);
+      entries.forEach(e => {
+        const id  = `${u.uid}_${e.proyectoId}_${e.fecha}`;
+        const ref = doc(db, "timesheets", id);
+        batch.set(ref, {
+          consultorId: u.uid, consultorEmail: email,
+          proyectoId: e.proyectoId, semana,
+          fecha: e.fecha, horas: e.horas,
+          aprobado: false, creadoEn: serverTimestamp()
+        }, { merge: true });
+      });
+      await batch.commit();
       closeModal("modal-timesheet");
-      document.getElementById("ts-horas").value = "";
-      document.getElementById("ts-desc").value  = "";
     } catch(e) { console.error(e); alert("Error al guardar."); }
-    finally { btn.textContent = "Guardar horas"; btn.disabled = false; }
+    finally { btn.textContent = "Guardar semana"; btn.disabled = false; }
   };
 
   // ══════════════════════════════════
@@ -2459,6 +2669,11 @@
 
   function openModal(id) {
     document.getElementById(id).classList.add("open");
+    if (id === "modal-timesheet") {
+      const semana = window._semanaActual || "";
+      const el     = document.getElementById("ts-semana");
+      if (el && semana) { el.value = semana; generarDiasSemana(); }
+    }
   }
 
   function closeModal(id) {

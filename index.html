@@ -1229,42 +1229,64 @@
           <span class="section-title">Asignaciones</span>
           <button class="btn-primary" onclick="openModal('modal-asignacion')">+ Nueva asignación</button>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+        <div id="asignaciones-lista">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando…</div>
+        </div>
       </div>
 
       <!-- ── TAREAS ── -->
       <div class="page" id="page-tareas">
         <div class="section-header" style="margin-bottom:1rem">
           <span class="section-title">Tareas e hitos</span>
-          <button class="btn-primary">+ Nueva tarea</button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select id="tareas-filtro-proyecto" onchange="filtrarTareasPorProyecto()" style="font-size:12px;padding:5px 10px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--muted);font-family:var(--font)">
+              <option value="">Todos los proyectos</option>
+            </select>
+            <select id="tareas-filtro-tipo" onchange="filtrarTareasPorTipo()" style="font-size:12px;padding:5px 10px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--muted);font-family:var(--font)">
+              <option value="">Todos los tipos</option>
+              <option value="hito">Hito</option>
+              <option value="tarea">Tarea</option>
+              <option value="incidencia">Incidencia</option>
+            </select>
+            <button class="btn-primary" onclick="openModal('modal-tarea')">+ Nueva tarea</button>
+          </div>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+        <div id="tareas-lista">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando…</div>
+        </div>
       </div>
 
       <!-- ── PIPELINE ── -->
       <div class="page" id="page-pipeline">
         <div class="section-header" style="margin-bottom:1rem">
           <span class="section-title">Pipeline comercial</span>
-          <button class="btn-primary">+ Nueva oportunidad</button>
+          <button class="btn-primary" onclick="openModal('modal-pipeline')">+ Nueva oportunidad</button>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+        <div id="pipeline-lista">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando…</div>
+        </div>
       </div>
 
       <!-- ── EQUIPO ── -->
       <div class="page" id="page-equipo">
         <div class="section-header" style="margin-bottom:1rem">
           <span class="section-title">Equipo</span>
+          <button class="btn-primary" id="btn-nuevo-usuario" onclick="openModal('modal-usuario')">+ Nuevo usuario</button>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+        <div id="equipo-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px;grid-column:1/-1">Cargando…</div>
+        </div>
       </div>
 
       <!-- ── TIMESHEETS ── -->
       <div class="page" id="page-timesheets">
         <div class="section-header" style="margin-bottom:1rem">
           <span class="section-title">Timesheets</span>
-          <button class="btn-primary">+ Registrar horas</button>
+          <button class="btn-primary" onclick="openModal('modal-timesheet')">+ Registrar horas</button>
         </div>
-        <p style="color:var(--muted);font-size:13px">Módulo en construcción.</p>
+        <div id="timesheets-lista">
+          <div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">Cargando…</div>
+        </div>
       </div>
 
     </div>
@@ -1375,61 +1397,219 @@
     <div class="row2">
       <div class="field">
         <label>Proyecto</label>
-        <select>
-          <option>S/4HANA FI — Grupo Norteño</option>
-          <option>CPI Integration — TexMaq</option>
-          <option>HCM Payroll — Constructora Alva</option>
-        </select>
+        <select id="asn-proyecto"></select>
       </div>
       <div class="field">
         <label>Consultor</label>
-        <select>
-          <option>Luis Hinojosa</option>
-          <option>Héctor Medrano</option>
-          <option>Mario</option>
-          <option>Kevin</option>
-          <option>Adrian</option>
-          <option>Andrés</option>
-          <option>Francisco</option>
-          <option>David</option>
-        </select>
+        <select id="asn-consultor"></select>
       </div>
     </div>
     <div class="field">
       <label>% Dedicación</label>
       <div style="display:flex;align-items:center;gap:12px">
-        <input type="range" min="10" max="100" step="10" value="50" id="pct-slider"
-          oninput="document.getElementById('pct-out').textContent=this.value+'%'"
-          style="flex:1">
-        <span id="pct-out" style="font-family:var(--mono);font-size:16px;font-weight:500;min-width:40px;text-align:right">50%</span>
+        <input type="range" min="10" max="100" step="10" value="50" id="asn-pct"
+          oninput="document.getElementById('asn-pct-out').textContent=this.value+'%'" style="flex:1">
+        <span id="asn-pct-out" style="font-family:var(--mono);font-size:16px;font-weight:500;min-width:40px;text-align:right">50%</span>
       </div>
     </div>
     <div class="row2">
-      <div class="field">
-        <label>Inicio</label>
-        <input type="date">
-      </div>
-      <div class="field">
-        <label>Fin estimado</label>
-        <input type="date">
-      </div>
+      <div class="field"><label>Inicio</label><input type="date" id="asn-inicio"></div>
+      <div class="field"><label>Fin estimado</label><input type="date" id="asn-fin"></div>
     </div>
     <div class="field">
       <label>Rol en el proyecto</label>
-      <select>
-        <option>Lead funcional</option>
-        <option>Lead técnico</option>
-        <option>Consultor funcional</option>
-        <option>Desarrollador ABAP</option>
-        <option>Integrador CPI/BTP</option>
-        <option>PMO / Coordinación</option>
-        <option>Soporte / AMS</option>
-        <option>Subcontratista</option>
+      <select id="asn-rol">
+        <option value="lead-func">Lead funcional</option>
+        <option value="lead-tec">Lead técnico</option>
+        <option value="consultor">Consultor funcional</option>
+        <option value="dev-abap">Desarrollador ABAP</option>
+        <option value="integrador">Integrador CPI/BTP</option>
+        <option value="pmo">PMO / Coordinación</option>
+        <option value="soporte">Soporte / AMS</option>
+        <option value="subcontratista">Subcontratista</option>
       </select>
     </div>
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-asignacion')">Cancelar</button>
-      <button class="btn-primary" onclick="closeModal('modal-asignacion')">Crear asignación</button>
+      <button class="btn-primary" id="btn-crear-asignacion" onclick="crearAsignacion()">Crear asignación</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NUEVA TAREA ══════ -->
+<div class="modal-overlay" id="modal-tarea">
+  <div class="modal">
+    <div class="modal-title">Nueva tarea / hito</div>
+    <div class="row2">
+      <div class="field">
+        <label>Proyecto</label>
+        <select id="tarea-proyecto"></select>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="tarea-tipo">
+          <option value="hito">Hito</option>
+          <option value="tarea">Tarea</option>
+          <option value="incidencia">Incidencia</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Nombre *</label>
+      <input type="text" id="tarea-nombre" placeholder="ej. Blueprint aprobado, Configuración FI base…">
+    </div>
+    <div class="row2">
+      <div class="field"><label>Fecha estimada</label><input type="date" id="tarea-fecha"></div>
+      <div class="field">
+        <label>Responsable</label>
+        <select id="tarea-responsable"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Prioridad</label>
+      <div class="chip-group">
+        <button class="chip" data-val="baja" onclick="togChipSingle(this)">Baja</button>
+        <button class="chip sel" data-val="media" onclick="togChipSingle(this)">Media</button>
+        <button class="chip" data-val="alta" onclick="togChipSingle(this)">Alta</button>
+        <button class="chip" data-val="critica" onclick="togChipSingle(this)">Crítica</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Descripción <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(opcional)</span></label>
+      <textarea id="tarea-desc" placeholder="Contexto, criterios de aceptación…" rows="3"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-tarea')">Cancelar</button>
+      <button class="btn-primary" id="btn-crear-tarea" onclick="crearTarea()">Crear tarea</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL TIMESHEET ══════ -->
+<div class="modal-overlay" id="modal-timesheet">
+  <div class="modal">
+    <div class="modal-title">Registrar horas</div>
+    <div class="row2">
+      <div class="field">
+        <label>Proyecto</label>
+        <select id="ts-proyecto"></select>
+      </div>
+      <div class="field">
+        <label>Semana</label>
+        <input type="week" id="ts-semana">
+      </div>
+    </div>
+    <div class="field">
+      <label>Horas</label>
+      <input type="number" id="ts-horas" placeholder="ej. 40" min="0.5" max="80" step="0.5">
+    </div>
+    <div class="field">
+      <label>Descripción <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(opcional)</span></label>
+      <textarea id="ts-desc" placeholder="¿Qué se hizo esta semana?" rows="3"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-timesheet')">Cancelar</button>
+      <button class="btn-primary" id="btn-crear-ts" onclick="crearTimesheet()">Guardar horas</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NUEVO USUARIO ══════ -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-title">Configurar usuario</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:1rem">El usuario debe haber iniciado sesión al menos una vez para aparecer aquí. Busca por email y asigna el rol.</p>
+    <div class="field">
+      <label>Email @asapbits.com</label>
+      <select id="usr-email-sel">
+        <option value="">Selecciona usuario pendiente…</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Rol</label>
+      <select id="usr-rol">
+        <option value="admin">Admin</option>
+        <option value="pmo">PMO</option>
+        <option value="consultor" selected>Consultor</option>
+        <option value="readonly">Readonly</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Skills SAP</label>
+      <div class="chip-group" id="usr-skills">
+        <button class="chip" onclick="togChip(this)">FI</button>
+        <button class="chip" onclick="togChip(this)">CO</button>
+        <button class="chip" onclick="togChip(this)">MM</button>
+        <button class="chip" onclick="togChip(this)">SD</button>
+        <button class="chip" onclick="togChip(this)">HCM</button>
+        <button class="chip" onclick="togChip(this)">PP</button>
+        <button class="chip" onclick="togChip(this)">ABAP</button>
+        <button class="chip" onclick="togChip(this)">BTP</button>
+        <button class="chip" onclick="togChip(this)">CPI</button>
+        <button class="chip" onclick="togChip(this)">Fiori</button>
+        <button class="chip" onclick="togChip(this)">PMO</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Ubicación</label>
+      <select id="usr-ubicacion">
+        <option value="Chihuahua">Chihuahua</option>
+        <option value="Monterrey">Monterrey</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Remoto">Remoto</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-usuario')">Cancelar</button>
+      <button class="btn-primary" id="btn-guardar-usuario" onclick="guardarUsuario()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL PIPELINE ══════ -->
+<div class="modal-overlay" id="modal-pipeline">
+  <div class="modal">
+    <div class="modal-title">Nueva oportunidad</div>
+    <div class="field">
+      <label>Nombre / descripción *</label>
+      <input type="text" id="pip-nombre" placeholder="ej. S/4HANA FI — Empresa XYZ">
+    </div>
+    <div class="row2">
+      <div class="field"><label>Cliente</label><input type="text" id="pip-cliente"></div>
+      <div class="field">
+        <label>Probabilidad</label>
+        <select id="pip-prob">
+          <option value="10">10% — Prospecto</option>
+          <option value="30">30% — Interesado</option>
+          <option value="50">50% — Propuesta</option>
+          <option value="70">70% — Negociación</option>
+          <option value="90">90% — Casi cerrado</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Fecha estimada</label><input type="date" id="pip-fecha"></div>
+      <div class="field">
+        <label>Responsable</label>
+        <select id="pip-responsable"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Módulos SAP</label>
+      <div class="chip-group" id="pip-modulos">
+        <button class="chip" onclick="togChip(this)">FI</button>
+        <button class="chip" onclick="togChip(this)">CO</button>
+        <button class="chip" onclick="togChip(this)">MM</button>
+        <button class="chip" onclick="togChip(this)">SD</button>
+        <button class="chip" onclick="togChip(this)">HCM</button>
+        <button class="chip" onclick="togChip(this)">ABAP</button>
+        <button class="chip" onclick="togChip(this)">BTP</button>
+        <button class="chip" onclick="togChip(this)">CPI</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-pipeline')">Cancelar</button>
+      <button class="btn-primary" id="btn-crear-pipeline" onclick="crearPipeline()">Crear oportunidad</button>
     </div>
   </div>
 </div>
@@ -1518,11 +1698,10 @@
     initApp(user, userData);
   });
 
-  // ── INIT APP ──
   function initApp(user, userData) {
-    const rol     = userData.rol;
-    const nombre  = userData.nombre || user.email.split("@")[0];
-    const inics   = nombre.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase();
+    const rol    = userData.rol;
+    const nombre = userData.nombre || user.email.split("@")[0];
+    const inics  = nombre.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase();
 
     document.getElementById("sidebar-avatar").textContent = inics;
     document.getElementById("sidebar-name").textContent   = nombre.split(" ")[0];
@@ -1535,8 +1714,26 @@
 
     window._currentUser = { uid: user.uid, rol, nombre, inics };
 
-    // Cargar proyectos en tiempo real
     cargarProyectos();
+    cargarEquipo();
+    cargarAsignaciones();
+    cargarTareas();
+    cargarTimesheets();
+    if (rol === "admin") cargarPipeline();
+
+    // Semana actual en timesheet
+    const hoy   = new Date();
+    const year  = hoy.getFullYear();
+    const week  = String(getWeekNumber(hoy)).padStart(2,"0");
+    const tsEl  = document.getElementById("ts-semana");
+    if (tsEl) tsEl.value = `${year}-W${week}`;
+  }
+
+  function getWeekNumber(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
   }
 
   // ══════════════════════════════════
@@ -1549,6 +1746,7 @@
       window._proyectos = proyectos;
       renderProyectos(proyectos);
       renderMetricas(proyectos);
+      poblarSelectsProyectos();
     });
   }
 
@@ -1774,8 +1972,466 @@
     }
   };
 
+  // ══════════════════════════════════
+  // EQUIPO
+  // ══════════════════════════════════
+  const EQUIPO = [
+    { nombre:"Luis Hinostroza",    email:"luis.hinostroza@asapbits.com",    iniciales:"LH", color:"#5b6af0", skills:["ABAP","BTP","CPI","FI"],       rol:"admin",    ubicacion:"Madrid"     },
+    { nombre:"Héctor Medrano",     email:"hector.medrano@asapbits.com",     iniciales:"HM", color:"#8b5cf6", skills:["HCM","FI","ABAP","CPI"],       rol:"admin",    ubicacion:"Chihuahua"  },
+    { nombre:"Mario Navarrete",    email:"mario.navarrete@asapbits.com",    iniciales:"MA", color:"#06b6d4", skills:["FI","PMO"],                    rol:"pmo",      ubicacion:"Chihuahua"  },
+    { nombre:"Kevin Carrillo",     email:"kevin.carrillo@asapbits.com",     iniciales:"KV", color:"#f59e0b", skills:["ABAP","BTP"],                  rol:"consultor",ubicacion:"Chihuahua"  },
+    { nombre:"Adrian Lopez",       email:"adrian.lopez@asapbits.com",       iniciales:"AL", color:"#ef4444", skills:["MM","SD"],                     rol:"consultor",ubicacion:"Chihuahua"  },
+    { nombre:"Andrés Gomez",       email:"andres.gomez@asapbits.com",       iniciales:"AG", color:"#10b981", skills:["ABAP"],                        rol:"consultor",ubicacion:"Chihuahua"  },
+    { nombre:"Francisco Martinez", email:"francisco.martinez@asapbits.com", iniciales:"FM", color:"#3b82f6", skills:["ABAP","CPI"],                  rol:"consultor",ubicacion:"Chihuahua"  },
+    { nombre:"David Espinoza",     email:"david.espinoza@asapbits.com",     iniciales:"DE", color:"#ec4899", skills:["CPI"],                         rol:"consultor",ubicacion:"Chihuahua"  },
+    { nombre:"Liliana León",       email:"liliana.leon@asapbits.com",       iniciales:"LL", color:"#f97316", skills:[],                              rol:"consultor",ubicacion:"Chihuahua"  },
+  ];
+  window._equipo = EQUIPO;
+
+  function cargarEquipo() {
+    const q = query(collection(db, "usuarios"));
+    onSnapshot(q, (snap) => {
+      const firestoreUsers = {};
+      snap.docs.forEach(d => { firestoreUsers[d.data().email] = { id: d.id, ...d.data() }; });
+      window._usuariosFS = firestoreUsers;
+      renderEquipo(firestoreUsers);
+      poblarSelectsUsuarios();
+      poblarSelectsUsuariosPendientes(firestoreUsers);
+    });
+  }
+
+  function renderEquipo(firestoreUsers) {
+    const grid = document.getElementById("equipo-grid");
+    if (!grid) return;
+
+    const cards = EQUIPO.map(u => {
+      const fs   = firestoreUsers[u.email];
+      const rolFS = fs?.rol || null;
+      const rolLabel = rolFS || "pendiente";
+      const rolClass = rolFS ? `role-${rolFS}` : "role-readonly";
+      const activo   = fs?.activo !== false;
+
+      const skills = (fs?.skills || u.skills || []).map(s =>
+        `<span class="chip" style="font-size:10px;padding:2px 7px;margin:1px">${s}</span>`
+      ).join("");
+
+      return `<div class="card" style="position:relative">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:36px;height:36px;border-radius:50%;background:${u.color}22;color:${u.color};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${u.iniciales}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:500;color:var(--text)">${u.nombre}</div>
+            <div style="font-size:11px;color:var(--muted)">${u.ubicacion}</div>
+          </div>
+          <span class="role-badge ${rolClass}">${rolLabel}</span>
+        </div>
+        <div style="font-size:11px;color:var(--hint);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.email}</div>
+        <div class="chip-group" style="margin-bottom:8px">${skills || '<span style="font-size:11px;color:var(--hint)">Sin skills asignados</span>'}</div>
+        ${!activo ? '<div style="font-size:11px;color:var(--red)">● Inactivo</div>' : ''}
+      </div>`;
+    }).join("");
+
+    grid.innerHTML = cards;
+  }
+
+  function poblarSelectsUsuarios() {
+    const selects = ["asn-consultor","tarea-responsable","pip-responsable","ts-proyecto"];
+    const options = EQUIPO.map(u =>
+      `<option value="${u.email}">${u.nombre}</option>`
+    ).join("");
+
+    ["asn-consultor","tarea-responsable","pip-responsable"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = options;
+    });
+  }
+
+  function poblarSelectsUsuariosPendientes(firestoreUsers) {
+    const sel = document.getElementById("usr-email-sel");
+    if (!sel) return;
+    const pendientes = EQUIPO.filter(u => {
+      const fs = firestoreUsers[u.email];
+      return !fs || !fs.rol;
+    });
+    sel.innerHTML = '<option value="">Selecciona usuario pendiente…</option>' +
+      pendientes.map(u => `<option value="${u.email}">${u.nombre} — ${u.email}</option>`).join("");
+  }
+
+  function poblarSelectsProyectos() {
+    const proyectos = window._proyectos || [];
+    const options   = proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join("");
+    ["asn-proyecto","tarea-proyecto","ts-proyecto"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = options || '<option value="">Sin proyectos</option>';
+    });
+
+    // Filtro de tareas
+    const filtro = document.getElementById("tareas-filtro-proyecto");
+    if (filtro) {
+      filtro.innerHTML = '<option value="">Todos los proyectos</option>' +
+        proyectos.map(p => `<option value="${p.id}">${p.nombre}</option>`).join("");
+    }
+  }
+
+  window.guardarUsuario = async () => {
+    const email  = document.getElementById("usr-email-sel").value;
+    const rol    = document.getElementById("usr-rol").value;
+    const ubic   = document.getElementById("usr-ubicacion").value;
+    const skills = [...document.querySelectorAll("#usr-skills .chip.sel")].map(c => c.textContent.trim());
+
+    if (!email) { alert("Selecciona un usuario."); return; }
+
+    const fs = window._usuariosFS?.[email];
+    if (!fs) { alert("El usuario aún no ha iniciado sesión en la app."); return; }
+
+    const btn = document.getElementById("btn-guardar-usuario");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      await updateDoc(doc(db, "usuarios", fs.id), { rol, ubicacion: ubic, skills, activo: true });
+      closeModal("modal-usuario");
+    } catch(e) {
+      console.error(e); alert("Error al guardar.");
+    } finally {
+      btn.textContent = "Guardar"; btn.disabled = false;
+    }
+  };
+
+  // ══════════════════════════════════
+  // ASIGNACIONES
+  // ══════════════════════════════════
+  function cargarAsignaciones() {
+    const q = query(collection(db, "asignaciones"), orderBy("creadoEn","desc"));
+    onSnapshot(q, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAsignaciones(items);
+    });
+  }
+
+  function renderAsignaciones(items) {
+    const cont = document.getElementById("asignaciones-lista");
+    if (!cont) return;
+
+    if (!items.length) {
+      cont.innerHTML = `<div class="card" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px">Sin asignaciones — crea la primera con el botón +</div>`;
+      return;
+    }
+
+    cont.innerHTML = `<div class="projects-list">
+      <div class="proj-row header" style="grid-template-columns:1fr 120px 80px 100px 100px 80px">
+        <div>Proyecto / consultor</div><div>Rol</div><div>Dedicación</div><div>Inicio</div><div>Fin</div><div>RAG</div>
+      </div>
+      ${items.map(a => {
+        const ragClass = a.ragEstado || "verde";
+        const inicio = a.fechaInicio ? new Date(a.fechaInicio).toLocaleDateString("es-MX",{day:"numeric",month:"short"}) : "—";
+        const fin    = a.fechaFin    ? new Date(a.fechaFin).toLocaleDateString("es-MX",{day:"numeric",month:"short"}) : "—";
+        const proy   = (window._proyectos||[]).find(p => p.id === a.proyectoId);
+        const u      = EQUIPO.find(e => e.email === a.consultorEmail) || {};
+        return `<div class="proj-row" style="grid-template-columns:1fr 120px 80px 100px 100px 80px">
+          <div>
+            <div class="proj-name">${proy?.nombre || "—"}</div>
+            <div class="proj-client">${u.nombre || a.consultorEmail || "—"}</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">${a.rol||"—"}</div>
+          <div style="font-size:12px;font-family:var(--mono);color:var(--text)">${a.pctDedicacion||"—"}%</div>
+          <div style="font-size:11px;color:var(--muted)">${inicio}</div>
+          <div style="font-size:11px;color:var(--muted)">${fin}</div>
+          <div class="rag-dot ${ragClass}" style="margin:0 auto"></div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  window.crearAsignacion = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const proyId  = document.getElementById("asn-proyecto").value;
+    const email   = document.getElementById("asn-consultor").value;
+    const pct     = parseInt(document.getElementById("asn-pct").value);
+    const rol     = document.getElementById("asn-rol").value;
+    const inicio  = document.getElementById("asn-inicio").value;
+    const fin     = document.getElementById("asn-fin").value;
+
+    if (!proyId || !email) { alert("Selecciona proyecto y consultor."); return; }
+
+    const btn = document.getElementById("btn-crear-asignacion");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      await addDoc(collection(db, "asignaciones"), {
+        proyectoId: proyId, consultorEmail: email,
+        pctDedicacion: pct, rol, ragEstado: "verde",
+        fechaInicio: inicio || null, fechaFin: fin || null,
+        activa: true, creadoEn: serverTimestamp(), creadoPor: u.uid
+      });
+      closeModal("modal-asignacion");
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Crear asignación"; btn.disabled = false; }
+  };
+
+  // ══════════════════════════════════
+  // TAREAS E HITOS
+  // ══════════════════════════════════
+  function cargarTareas() {
+    const q = query(collection(db, "tareas"), orderBy("creadoEn","desc"));
+    onSnapshot(q, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      window._tareas = items;
+      renderTareas(items);
+    });
+  }
+
+  function renderTareas(items) {
+    const cont = document.getElementById("tareas-lista");
+    if (!cont) return;
+
+    if (!items.length) {
+      cont.innerHTML = `<div class="card" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px">Sin tareas — crea la primera con el botón +</div>`;
+      return;
+    }
+
+    const estadoColor = { pendiente:"var(--hint)", "en-curso":"var(--amber)", completado:"var(--green)", bloqueado:"var(--red)" };
+    const tipoIcon    = { hito:"◆", tarea:"◻", incidencia:"⚠" };
+    const priorColor  = { baja:"var(--hint)", media:"var(--amber)", alta:"var(--red)", critica:"#ff0000" };
+
+    cont.innerHTML = `<div class="projects-list">
+      <div class="proj-row header" style="grid-template-columns:30px 1fr 80px 100px 100px 90px 80px">
+        <div></div><div>Tarea</div><div>Tipo</div><div>Proyecto</div><div>Responsable</div><div>Fecha</div><div>Estado</div>
+      </div>
+      ${items.map(t => {
+        const proy  = (window._proyectos||[]).find(p => p.id === t.proyectoId);
+        const u     = EQUIPO.find(e => e.email === t.responsableEmail) || {};
+        const fecha = t.fechaEstimada ? new Date(t.fechaEstimada).toLocaleDateString("es-MX",{day:"numeric",month:"short"}) : "—";
+        const col   = estadoColor[t.estado] || "var(--muted)";
+        return `<div class="proj-row" style="grid-template-columns:30px 1fr 80px 100px 100px 90px 80px"
+          onclick="cambiarEstadoTarea('${t.id}','${t.estado||"pendiente"}')">
+          <div style="font-size:14px;color:${priorColor[t.prioridad]||'var(--muted)'}">${tipoIcon[t.tipo]||"◻"}</div>
+          <div>
+            <div class="proj-name">${t.nombre||"—"}</div>
+            <div class="proj-client">${t.descripcion ? t.descripcion.slice(0,60)+"…" : ""}</div>
+          </div>
+          <span class="tag tag-impl" style="font-size:10px">${t.tipo||"tarea"}</span>
+          <div style="font-size:11px;color:var(--muted)">${proy?.nombre?.split("—")[0]?.trim()||"—"}</div>
+          <div style="font-size:11px;color:var(--muted)">${u.iniciales||"—"}</div>
+          <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">${fecha}</div>
+          <div style="font-size:11px;color:${col};font-weight:500">${t.estado||"pendiente"}</div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  window.cambiarEstadoTarea = async (id, estadoActual) => {
+    const estados = ["pendiente","en-curso","completado","bloqueado"];
+    const next    = estados[(estados.indexOf(estadoActual) + 1) % estados.length];
+    try { await updateDoc(doc(db,"tareas",id), { estado: next }); } catch(e) { console.error(e); }
+  };
+
+  window.filtrarTareasPorProyecto = () => {
+    const val   = document.getElementById("tareas-filtro-proyecto").value;
+    const items = val ? (window._tareas||[]).filter(t => t.proyectoId === val) : (window._tareas||[]);
+    renderTareas(items);
+  };
+
+  window.filtrarTareasPorTipo = () => {
+    const val   = document.getElementById("tareas-filtro-tipo").value;
+    const items = val ? (window._tareas||[]).filter(t => t.tipo === val) : (window._tareas||[]);
+    renderTareas(items);
+  };
+
+  window.crearTarea = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const nombre = document.getElementById("tarea-nombre").value.trim();
+    const proyId = document.getElementById("tarea-proyecto").value;
+    const tipo   = document.getElementById("tarea-tipo").value;
+    const fecha  = document.getElementById("tarea-fecha").value;
+    const resp   = document.getElementById("tarea-responsable").value;
+    const desc   = document.getElementById("tarea-desc").value.trim();
+    const priorEl= document.querySelector("#modal-tarea .chip.sel");
+    const prior  = priorEl?.dataset?.val || "media";
+
+    if (!nombre) { alert("El nombre es obligatorio."); return; }
+
+    const btn = document.getElementById("btn-crear-tarea");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      await addDoc(collection(db, "tareas"), {
+        nombre, proyectoId: proyId, tipo, descripcion: desc,
+        fechaEstimada: fecha || null, responsableEmail: resp,
+        prioridad: prior, estado: "pendiente",
+        creadoEn: serverTimestamp(), creadoPor: u.uid
+      });
+      closeModal("modal-tarea");
+      document.getElementById("tarea-nombre").value = "";
+      document.getElementById("tarea-desc").value   = "";
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Crear tarea"; btn.disabled = false; }
+  };
+
+  // ══════════════════════════════════
+  // TIMESHEETS
+  // ══════════════════════════════════
+  function cargarTimesheets() {
+    const u = window._currentUser;
+    if (!u) return;
+    const isAdmin = u.rol === "admin" || u.rol === "pmo";
+    const q = isAdmin
+      ? query(collection(db,"timesheets"), orderBy("creadoEn","desc"))
+      : query(collection(db,"timesheets"), where("consultorId","==",u.uid), orderBy("creadoEn","desc"));
+
+    onSnapshot(q, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTimesheets(items);
+    });
+  }
+
+  function renderTimesheets(items) {
+    const cont = document.getElementById("timesheets-lista");
+    if (!cont) return;
+
+    if (!items.length) {
+      cont.innerHTML = `<div class="card" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px">Sin registros de horas aún.</div>`;
+      return;
+    }
+
+    // Agrupar por semana
+    const bySemana = {};
+    items.forEach(t => {
+      const s = t.semana || "Sin semana";
+      if (!bySemana[s]) bySemana[s] = [];
+      bySemana[s].push(t);
+    });
+
+    cont.innerHTML = Object.entries(bySemana).map(([semana, rows]) => {
+      const totalHoras = rows.reduce((a,r) => a + (r.horas||0), 0);
+      return `<div class="card" style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:13px;font-weight:500;color:var(--text)">Semana ${semana}</span>
+          <span style="font-size:12px;font-family:var(--mono);color:var(--muted)">${totalHoras}h total</span>
+        </div>
+        ${rows.map(r => {
+          const proy = (window._proyectos||[]).find(p => p.id === r.proyectoId);
+          const u    = EQUIPO.find(e => e.email === r.consultorEmail) || {};
+          const aprobado = r.aprobado ? `<span style="font-size:10px;color:var(--green)">✓</span>` : `<span style="font-size:10px;color:var(--hint)">pendiente</span>`;
+          return `<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px">
+            <div style="width:24px;height:24px;border-radius:50%;background:${u.color||"var(--bg3)"}22;color:${u.color||"var(--muted)"};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">${u.iniciales||"?"}</div>
+            <div style="flex:1;color:var(--muted)">${proy?.nombre||"—"}</div>
+            <div style="font-family:var(--mono);color:var(--text);font-weight:500">${r.horas}h</div>
+            ${aprobado}
+          </div>`;
+        }).join("")}
+      </div>`;
+    }).join("");
+  }
+
+  window.crearTimesheet = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const proyId = document.getElementById("ts-proyecto").value;
+    const semana = document.getElementById("ts-semana").value;
+    const horas  = parseFloat(document.getElementById("ts-horas").value);
+    const desc   = document.getElementById("ts-desc").value.trim();
+
+    if (!proyId || !semana || !horas) { alert("Proyecto, semana y horas son obligatorios."); return; }
+
+    const btn = document.getElementById("btn-crear-ts");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    const email = EQUIPO.find(e => e.nombre === u.nombre)?.email || "";
+
+    try {
+      const tsId  = `${u.uid}_${proyId}_${semana}`;
+      await setDoc(doc(db,"timesheets",tsId), {
+        consultorId: u.uid, consultorEmail: email,
+        proyectoId: proyId, semana, horas, descripcion: desc,
+        aprobado: false, creadoEn: serverTimestamp()
+      }, { merge: true });
+      closeModal("modal-timesheet");
+      document.getElementById("ts-horas").value = "";
+      document.getElementById("ts-desc").value  = "";
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Guardar horas"; btn.disabled = false; }
+  };
+
+  // ══════════════════════════════════
+  // PIPELINE
+  // ══════════════════════════════════
+  function cargarPipeline() {
+    const q = query(collection(db,"pipeline"), orderBy("creadoEn","desc"));
+    onSnapshot(q, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderPipeline(items);
+    });
+  }
+
+  function renderPipeline(items) {
+    const cont = document.getElementById("pipeline-lista");
+    if (!cont) return;
+
+    if (!items.length) {
+      cont.innerHTML = `<div class="card" style="text-align:center;padding:2rem;color:var(--muted);font-size:13px">Sin oportunidades en pipeline.</div>`;
+      return;
+    }
+
+    cont.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      ${items.map(p => {
+        const probColor = p.probabilidad >= 70 ? "var(--green)" : p.probabilidad >= 40 ? "var(--amber)" : "var(--muted)";
+        const resp      = EQUIPO.find(e => e.email === p.responsableEmail) || {};
+        const fecha     = p.fechaEstimada ? new Date(p.fechaEstimada).toLocaleDateString("es-MX",{month:"short",year:"2-digit"}) : "—";
+        return `<div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div style="font-size:13px;font-weight:500;color:var(--text);flex:1">${p.nombre}</div>
+            <span style="font-size:13px;font-weight:600;font-family:var(--mono);color:${probColor};margin-left:8px">${p.probabilidad}%</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${p.cliente||"—"}</div>
+          <div style="height:3px;background:var(--bg3);border-radius:2px;margin-bottom:8px">
+            <div style="width:${p.probabilidad}%;height:3px;background:${probColor};border-radius:2px"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--hint)">
+            <span>${resp.nombre?.split(" ")[0]||"—"}</span>
+            <span>${fecha}</span>
+          </div>
+          ${p.modulos?.length ? `<div class="chip-group" style="margin-top:6px">${p.modulos.map(m=>`<span class="chip" style="font-size:10px;padding:2px 6px">${m}</span>`).join("")}</div>` : ""}
+        </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  window.crearPipeline = async () => {
+    const u = window._currentUser;
+    if (!u) return;
+
+    const nombre = document.getElementById("pip-nombre").value.trim();
+    const cliente= document.getElementById("pip-cliente").value.trim();
+    const prob   = parseInt(document.getElementById("pip-prob").value);
+    const fecha  = document.getElementById("pip-fecha").value;
+    const resp   = document.getElementById("pip-responsable").value;
+    const mods   = [...document.querySelectorAll("#pip-modulos .chip.sel")].map(c => c.textContent.trim());
+
+    if (!nombre) { alert("El nombre es obligatorio."); return; }
+
+    const btn = document.getElementById("btn-crear-pipeline");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      await addDoc(collection(db,"pipeline"), {
+        nombre, cliente, probabilidad: prob, modulos: mods,
+        fechaEstimada: fecha || null, responsableEmail: resp,
+        estado: "activo", creadoEn: serverTimestamp(), creadoPor: u.uid
+      });
+      closeModal("modal-pipeline");
+      document.getElementById("pip-nombre").value  = "";
+      document.getElementById("pip-cliente").value = "";
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Crear oportunidad"; btn.disabled = false; }
+  };
+
   function show(id) { document.getElementById(id).classList.remove("hidden"); }
   function hide(id) { document.getElementById(id).classList.add("hidden"); }
+</script>
 </script>
 
 <!-- ══════ UI JS ══════ -->

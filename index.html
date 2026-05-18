@@ -1335,8 +1335,11 @@
             <select id="tareas-filtro-tipo" onchange="filtrarTareasPorTipo()" style="font-size:12px;padding:5px 10px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--muted);font-family:var(--font)">
               <option value="">Todos los tipos</option>
               <option value="hito">Hito</option>
-              <option value="tarea">Tarea</option>
+              <option value="tarea-tec">Tarea Técnica</option>
+              <option value="tarea-func">Tarea Funcional</option>
               <option value="incidencia">Incidencia</option>
+              <option value="sesion">Sesión</option>
+              <option value="capacitacion">Capacitación</option>
             </select>
             <button class="btn-primary" onclick="openModal('modal-tarea')">+ Nueva tarea</button>
           </div>
@@ -1395,6 +1398,30 @@
         <button class="rag-opt" data-rag="amarillo" onclick="selRag(this,'amarillo')">Amarillo</button>
         <button class="rag-opt" data-rag="rojo" onclick="selRag(this,'rojo')">Rojo</button>
       </div>
+    </div>
+    <div class="field">
+      <label>Sub-estatus del proyecto</label>
+      <select id="nota-subestatus" style="width:100%;padding:8px 10px;font-size:13px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--font);outline:none">
+        <option value="">— Sin cambio —</option>
+        <option value="no-comenzado">No comenzado</option>
+        <option value="en-progreso">En progreso</option>
+        <option value="completado">Completado</option>
+        <option value="retrasado">Retrasado</option>
+        <option value="en-espera">En espera</option>
+        <option value="en-pruebas">En pruebas</option>
+        <option value="mejoras">Mejoras</option>
+        <option value="pausado">Pausado</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>% Avance del proyecto</label>
+      <div style="display:flex;align-items:center;gap:12px">
+        <input type="range" min="0" max="100" step="5" value="0" id="nota-avance"
+          oninput="document.getElementById('nota-avance-out').textContent=this.value+'%'"
+          style="flex:1;accent-color:var(--accent)">
+        <span id="nota-avance-out" style="font-family:var(--mono);font-size:14px;font-weight:500;min-width:36px;text-align:right;color:var(--text)">0%</span>
+      </div>
+      <div style="font-size:11px;color:var(--hint);margin-top:3px">Deja en 0% para no modificar el avance actual</div>
     </div>
     <div class="field">
       <label>Tipo de nota</label>
@@ -1466,12 +1493,57 @@
         <button class="chip" onclick="togChip(this)">SD</button>
         <button class="chip" onclick="togChip(this)">HCM</button>
         <button class="chip" onclick="togChip(this)">PP</button>
+        <button class="chip" onclick="togChip(this)">PM</button>
+        <button class="chip" onclick="togChip(this)">PS</button>
+        <button class="chip" onclick="togChip(this)">QM</button>
+        <button class="chip" onclick="togChip(this)">WM</button>
+        <button class="chip" onclick="togChip(this)">RE</button>
+        <button class="chip" onclick="togChip(this)">RE-FX</button>
+        <button class="chip" onclick="togChip(this)">GTS</button>
         <button class="chip" onclick="togChip(this)">ABAP</button>
         <button class="chip" onclick="togChip(this)">BTP</button>
         <button class="chip" onclick="togChip(this)">CPI</button>
         <button class="chip" onclick="togChip(this)">Fiori</button>
         <button class="chip" onclick="togChip(this)">S/4HANA</button>
       </div>
+    </div>
+    <!-- Tareas automáticas al crear proyecto -->
+    <div class="field">
+      <label>Tareas iniciales</label>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+          <input type="checkbox" id="proy-tarea-tec" style="width:14px;height:14px;accent-color:var(--accent)">
+          Crear tarea <strong>Técnica</strong> automáticamente
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;color:var(--text)">
+          <input type="checkbox" id="proy-tarea-func" style="width:14px;height:14px;accent-color:var(--accent)">
+          Crear tarea <strong>Funcional</strong> automáticamente
+        </label>
+      </div>
+    </div>
+    <!-- Asignaciones al crear proyecto -->
+    <div class="field">
+      <label>Asignar equipo al crear <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(opcional)</span></label>
+      <div id="proy-asignaciones-ini" style="display:flex;flex-direction:column;gap:6px">
+        <div class="proy-asig-row" style="display:grid;grid-template-columns:1fr 80px 90px auto;gap:6px;align-items:center">
+          <select style="font-size:12px;padding:6px 8px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font)" class="asig-ini-consultor">
+            <option value="">— Consultor —</option>
+          </select>
+          <select style="font-size:12px;padding:6px 8px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font)" class="asig-ini-rol">
+            <option value="lead-func">Lead Func.</option>
+            <option value="lead-tec">Lead Téc.</option>
+            <option value="consultor">Consultor</option>
+            <option value="dev-abap">ABAP</option>
+            <option value="pmo">PMO</option>
+          </select>
+          <div style="display:flex;align-items:center;gap:4px">
+            <input type="range" min="10" max="100" step="10" value="50" class="asig-ini-pct" style="flex:1;width:50px" oninput="this.nextElementSibling.textContent=this.value+'%'">
+            <span style="font-size:11px;font-family:var(--mono);min-width:30px">50%</span>
+          </div>
+          <span style="color:var(--hint);font-size:12px">—</span>
+        </div>
+      </div>
+      <button type="button" onclick="agregarFilaAsignacion()" style="margin-top:6px;font-size:11px;color:var(--accent2);background:transparent;border:none;cursor:pointer;font-family:var(--font);padding:0">+ añadir consultor</button>
     </div>
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-proyecto')">Cancelar</button>
@@ -1539,8 +1611,11 @@
         <label>Tipo</label>
         <select id="tarea-tipo">
           <option value="hito">Hito</option>
-          <option value="tarea">Tarea</option>
+          <option value="tarea-tec">Tarea Técnica</option>
+          <option value="tarea-func">Tarea Funcional</option>
           <option value="incidencia">Incidencia</option>
+          <option value="sesion">Sesión</option>
+          <option value="capacitacion">Capacitación</option>
         </select>
       </div>
     </div>
@@ -1661,6 +1736,8 @@
           <option value="50">50% — Propuesta</option>
           <option value="70">70% — Negociación</option>
           <option value="90">90% — Casi cerrado</option>
+          <option value="100">100% — ✅ Proyecto conseguido</option>
+          <option value="0">0% — ❌ Rechazado</option>
         </select>
       </div>
     </div>
@@ -1687,6 +1764,144 @@
     <div class="modal-footer">
       <button class="btn-sm" onclick="closeModal('modal-pipeline')">Cancelar</button>
       <button class="btn-primary" id="btn-crear-pipeline" onclick="crearPipeline()">Crear oportunidad</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL DETALLE TAREA ══════ -->
+<div class="modal-overlay" id="modal-tarea-detalle">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-title" id="tarea-detalle-titulo">Detalle de tarea</div>
+    <input type="hidden" id="tarea-detalle-id">
+    <div class="row2">
+      <div class="field">
+        <label>Proyecto</label>
+        <select id="td-proyecto"></select>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="td-tipo">
+          <option value="hito">Hito</option>
+          <option value="tarea-tec">Tarea Técnica</option>
+          <option value="tarea-func">Tarea Funcional</option>
+          <option value="incidencia">Incidencia</option>
+          <option value="sesion">Sesión</option>
+          <option value="capacitacion">Capacitación</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Nombre *</label>
+      <input type="text" id="td-nombre" placeholder="Nombre de la tarea">
+    </div>
+    <div class="row2">
+      <div class="field"><label>Fecha estimada</label><input type="date" id="td-fecha"></div>
+      <div class="field">
+        <label>Responsable</label>
+        <select id="td-responsable"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Estado</label>
+      <select id="td-estado">
+        <option value="pendiente">Pendiente</option>
+        <option value="en-curso">En curso</option>
+        <option value="completado">Completado</option>
+        <option value="bloqueado">Bloqueado</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Prioridad</label>
+      <div class="chip-group" id="td-prioridad-chips">
+        <button class="chip" data-val="baja" onclick="togChipSingle(this)">Baja</button>
+        <button class="chip sel" data-val="media" onclick="togChipSingle(this)">Media</button>
+        <button class="chip" data-val="alta" onclick="togChipSingle(this)">Alta</button>
+        <button class="chip" data-val="critica" onclick="togChipSingle(this)">Crítica</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Descripción</label>
+      <textarea id="td-desc" rows="4" placeholder="Contexto, criterios de aceptación, comentarios…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-tarea-detalle')">Cancelar</button>
+      <button class="btn-primary" id="btn-guardar-tarea-detalle" onclick="guardarDetalleTarea()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL OBJETOS TÉCNICOS / TRs ══════ -->
+<div class="modal-overlay" id="modal-objetos">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-title" id="objetos-proyecto-label">Objetos técnicos / Transport Requests</div>
+    <input type="hidden" id="objetos-proyecto-id">
+    <div style="margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:130px 1fr 100px 80px auto;gap:6px;align-items:center;margin-bottom:6px">
+        <span style="font-size:11px;color:var(--hint);font-weight:500;text-transform:uppercase;letter-spacing:.05em">TR / Número</span>
+        <span style="font-size:11px;color:var(--hint);font-weight:500;text-transform:uppercase;letter-spacing:.05em">Descripción</span>
+        <span style="font-size:11px;color:var(--hint);font-weight:500;text-transform:uppercase;letter-spacing:.05em">Sistema</span>
+        <span style="font-size:11px;color:var(--hint);font-weight:500;text-transform:uppercase;letter-spacing:.05em">Estatus</span>
+        <span></span>
+      </div>
+      <div id="objetos-lista"></div>
+      <button onclick="agregarObjetoRow()" style="margin-top:8px;font-size:11px;color:var(--accent2);background:transparent;border:none;cursor:pointer;font-family:var(--font);padding:0">+ agregar TR / objeto</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-objetos')">Cancelar</button>
+      <button class="btn-primary" id="btn-guardar-objetos" onclick="guardarObjetos()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL EDITAR PIPELINE ══════ -->
+<div class="modal-overlay" id="modal-pipeline-edit">
+  <div class="modal">
+    <div class="modal-title">Editar oportunidad</div>
+    <input type="hidden" id="pip-edit-id">
+    <div class="field">
+      <label>Nombre / descripción *</label>
+      <input type="text" id="pip-edit-nombre" placeholder="ej. S/4HANA FI — Empresa XYZ">
+    </div>
+    <div class="row2">
+      <div class="field"><label>Cliente</label><input type="text" id="pip-edit-cliente"></div>
+      <div class="field">
+        <label>Probabilidad</label>
+        <select id="pip-edit-prob">
+          <option value="10">10% — Prospecto</option>
+          <option value="30">30% — Interesado</option>
+          <option value="50">50% — Propuesta</option>
+          <option value="70">70% — Negociación</option>
+          <option value="90">90% — Casi cerrado</option>
+          <option value="100">100% — ✅ Proyecto conseguido</option>
+          <option value="0">0% — ❌ Rechazado</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Fecha estimada</label><input type="date" id="pip-edit-fecha"></div>
+      <div class="field">
+        <label>Responsable</label>
+        <select id="pip-edit-responsable"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Módulos SAP</label>
+      <div class="chip-group" id="pip-edit-modulos">
+        <button class="chip" onclick="togChip(this)">FI</button>
+        <button class="chip" onclick="togChip(this)">CO</button>
+        <button class="chip" onclick="togChip(this)">MM</button>
+        <button class="chip" onclick="togChip(this)">SD</button>
+        <button class="chip" onclick="togChip(this)">HCM</button>
+        <button class="chip" onclick="togChip(this)">ABAP</button>
+        <button class="chip" onclick="togChip(this)">BTP</button>
+        <button class="chip" onclick="togChip(this)">CPI</button>
+        <button class="chip" onclick="togChip(this)">RE-FX</button>
+        <button class="chip" onclick="togChip(this)">RE</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm" onclick="closeModal('modal-pipeline-edit')">Cancelar</button>
+      <button class="btn-primary" id="btn-guardar-pipeline-edit" onclick="guardarPipelineEdit()">Guardar cambios</button>
     </div>
   </div>
 </div>
@@ -1866,9 +2081,8 @@
     }
 
     const rows = proyectos.map(p => {
-      const pct      = p.horasVendidas && p.horasConsumidas
-                       ? Math.round((p.horasConsumidas / p.horasVendidas) * 100)
-                       : null;
+      const avance   = p.avance != null ? p.avance : null;
+      const avColor  = avance >= 80 ? "var(--green)" : avance >= 40 ? "var(--amber)" : "var(--red)";
       const ragClass = p.ragEstado || "verde";
       const barColor = ragClass === "verde" ? "var(--green)"
                      : ragClass === "rojo"  ? "var(--red)" : "var(--amber)";
@@ -1880,10 +2094,11 @@
       const cierre   = p.fechaCierre
                        ? new Date(p.fechaCierre).toLocaleDateString("es-MX",{month:"short",year:"2-digit"})
                        : "—";
-      const pctTxt   = pct !== null ? `${pct}%` : "—";
-      const barW     = pct !== null ? Math.min(pct, 100) : 0;
+      const avanceTxt = avance !== null ? `${avance}%` : "—";
+      const barW      = avance !== null ? Math.min(avance, 100) : 0;
       const vencido  = p.fechaCierre && new Date(p.fechaCierre) < new Date();
       const nombre   = (p.nombre || "Sin nombre").replace(/'/g, "\\'");
+      const subestatusLabel = p.subestatus ? `<span style="font-size:10px;color:var(--hint);margin-top:1px;display:block">${p.subestatus.replace(/-/g," ")}</span>` : "";
 
       return `<div class="proj-row" data-rag="${ragClass}"
                 onclick="abrirNota('${p.id}','${nombre}')">
@@ -1891,14 +2106,18 @@
         <div>
           <div class="proj-name">${p.nombre || "Sin nombre"}</div>
           <div class="proj-client">${p.cliente || ""}${p.modulos && p.modulos.length ? " · " + p.modulos.slice(0,3).join(", ") : ""}</div>
+          ${subestatusLabel}
         </div>
         ${tipoTag}
         <div class="pct-bar-wrap">
-          <div class="pct-text" style="${pct > 100 ? "color:var(--red)" : ""}">${pctTxt}</div>
-          <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:${barW}%;background:${barColor}"></div></div>
+          <div class="pct-text" style="${avance > 100 ? "color:var(--red)" : ""}">${avanceTxt}</div>
+          <div class="pct-bar-bg"><div class="pct-bar-fill" style="width:${barW}%;background:${avance !== null ? avColor : barColor}"></div></div>
         </div>
         <div style="font-size:12px;color:var(--muted)">${p.leadNombre || "—"}</div>
-        <div style="font-size:11px;color:${vencido?"var(--red)":"var(--muted)"};font-family:var(--mono)">${vencido?"Vencido":cierre}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:${vencido?"var(--red)":"var(--muted)"};font-family:var(--mono)">${vencido?"Vencido":cierre}</span>
+          <button onclick="event.stopPropagation();abrirObjetos('${p.id}','${nombre}')" style="font-size:10px;padding:2px 6px;border-radius:5px;border:0.5px solid var(--border2);background:transparent;color:var(--hint);cursor:pointer;font-family:var(--font);white-space:nowrap">TRs</button>
+        </div>
       </div>`;
     }).join("");
 
@@ -1916,22 +2135,34 @@
     const inicio   = document.getElementById("proy-inicio").value;
     const cierre   = document.getElementById("proy-cierre").value;
     const horas    = parseInt(document.getElementById("proy-horas").value) || null;
+    const tarTec   = document.getElementById("proy-tarea-tec").checked;
+    const tarFunc  = document.getElementById("proy-tarea-func").checked;
 
     if (!nombre) { alert("El nombre del proyecto es obligatorio."); return; }
 
     const modulos = [...document.querySelectorAll("#proy-modulos .chip.sel")]
                       .map(c => c.textContent.trim());
 
+    // Recolectar asignaciones iniciales
+    const asigRows = document.querySelectorAll("#proy-asignaciones-ini .proy-asig-row");
+    const asignacionesIni = [];
+    asigRows.forEach(row => {
+      const email = row.querySelector(".asig-ini-consultor").value;
+      const rol   = row.querySelector(".asig-ini-rol").value;
+      const pct   = parseInt(row.querySelector(".asig-ini-pct").value) || 50;
+      if (email) asignacionesIni.push({ email, rol, pct });
+    });
+
     const btnGuardar = document.getElementById("btn-crear-proyecto");
     btnGuardar.textContent = "Guardando…"; btnGuardar.disabled = true;
 
     try {
-      await addDoc(collection(db, "proyectos"), {
-        nombre,
-        cliente,
-        tipo,
+      const proyRef = await addDoc(collection(db, "proyectos"), {
+        nombre, cliente, tipo,
         estado:        "activo",
         ragEstado:     "verde",
+        subestatus:    "no-comenzado",
+        avance:        0,
         ragHistorial:  [],
         modulos,
         fechaInicio:   inicio || null,
@@ -1944,6 +2175,38 @@
         creadoEn:      serverTimestamp(),
         creadoPor:     u.uid
       });
+
+      // Crear tareas automáticas
+      const batch = writeBatch(db);
+      if (tarTec) {
+        batch.set(doc(collection(db,"tareas")), {
+          nombre: "Tareas Técnicas", proyectoId: proyRef.id,
+          tipo: "tarea-tec", descripcion: "Tarea técnica general del proyecto",
+          estado: "pendiente", prioridad: "media",
+          fechaEstimada: cierre || null, responsableEmail: "",
+          creadoEn: serverTimestamp(), creadoPor: u.uid
+        });
+      }
+      if (tarFunc) {
+        batch.set(doc(collection(db,"tareas")), {
+          nombre: "Tareas Funcionales", proyectoId: proyRef.id,
+          tipo: "tarea-func", descripcion: "Tarea funcional general del proyecto",
+          estado: "pendiente", prioridad: "media",
+          fechaEstimada: cierre || null, responsableEmail: "",
+          creadoEn: serverTimestamp(), creadoPor: u.uid
+        });
+      }
+      // Crear asignaciones iniciales
+      asignacionesIni.forEach(a => {
+        batch.set(doc(collection(db,"asignaciones")), {
+          proyectoId: proyRef.id, consultorEmail: a.email,
+          pctDedicacion: a.pct, rol: a.rol, ragEstado: "verde",
+          fechaInicio: inicio || null, fechaFin: cierre || null,
+          activa: true, creadoEn: serverTimestamp(), creadoPor: u.uid
+        });
+      });
+      await batch.commit();
+
       closeModal("modal-proyecto");
       limpiarFormProyecto();
     } catch(e) {
@@ -1954,11 +2217,50 @@
     }
   };
 
+  window.agregarFilaAsignacion = () => {
+    const cont = document.getElementById("proy-asignaciones-ini");
+    const opts  = EQUIPO.map(u => `<option value="${u.email}">${u.nombre.split(" ")[0]}</option>`).join("");
+    const div   = document.createElement("div");
+    div.className = "proy-asig-row";
+    div.style.cssText = "display:grid;grid-template-columns:1fr 80px 90px auto;gap:6px;align-items:center";
+    div.innerHTML = `
+      <select style="font-size:12px;padding:6px 8px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font)" class="asig-ini-consultor">
+        <option value="">— Consultor —</option>${opts}
+      </select>
+      <select style="font-size:12px;padding:6px 8px;border-radius:7px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font)" class="asig-ini-rol">
+        <option value="lead-func">Lead Func.</option>
+        <option value="lead-tec">Lead Téc.</option>
+        <option value="consultor">Consultor</option>
+        <option value="dev-abap">ABAP</option>
+        <option value="pmo">PMO</option>
+      </select>
+      <div style="display:flex;align-items:center;gap:4px">
+        <input type="range" min="10" max="100" step="10" value="50" class="asig-ini-pct" style="flex:1;width:50px" oninput="this.nextElementSibling.textContent=this.value+'%'">
+        <span style="font-size:11px;font-family:var(--mono);min-width:30px">50%</span>
+      </div>
+      <button onclick="this.closest('.proy-asig-row').remove()" style="background:transparent;border:none;color:var(--hint);cursor:pointer;font-size:16px;line-height:1;padding:0 4px">×</button>`;
+    cont.appendChild(div);
+    // populate consultor options
+    div.querySelector(".asig-ini-consultor").innerHTML = `<option value="">— Consultor —</option>${opts}`;
+  };
+
   function limpiarFormProyecto() {
     ["proy-nombre","proy-cliente","proy-inicio","proy-cierre","proy-horas"]
       .forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
     document.querySelectorAll("#proy-modulos .chip").forEach(c => c.classList.remove("sel"));
     document.getElementById("proy-tipo").selectedIndex = 0;
+    const tec  = document.getElementById("proy-tarea-tec");
+    const func = document.getElementById("proy-tarea-func");
+    if (tec) tec.checked = false;
+    if (func) func.checked = false;
+    // Dejar solo la primera fila de asignación vacía
+    const cont = document.getElementById("proy-asignaciones-ini");
+    if (cont) {
+      const rows = cont.querySelectorAll(".proy-asig-row");
+      rows.forEach((r,i) => { if(i > 0) r.remove(); });
+      const first = cont.querySelector(".asig-ini-consultor");
+      if (first) first.value = "";
+    }
   }
 
   // ── NOTAS ──
@@ -1966,6 +2268,19 @@
     document.getElementById("nota-proyecto-id").value   = proyId;
     document.getElementById("nota-proyecto-label").textContent = proyNombre;
     document.getElementById("nota-texto").value = "";
+
+    // Precargar avance y subestatus del proyecto actual
+    const proy = (window._proyectos||[]).find(p => p.id === proyId);
+    const avEl = document.getElementById("nota-avance");
+    const avOut= document.getElementById("nota-avance-out");
+    const subEl= document.getElementById("nota-subestatus");
+    if (avEl && proy) {
+      avEl.value = proy.avance || 0;
+      if (avOut) avOut.textContent = (proy.avance || 0) + "%";
+    }
+    if (subEl && proy?.subestatus) subEl.value = proy.subestatus;
+    else if (subEl) subEl.value = "";
+
     cargarNotasRecientes(proyId);
     openModal("modal-nota");
   };
@@ -2008,12 +2323,15 @@
     const u = window._currentUser;
     if (!u) return;
 
-    const proyId   = document.getElementById("nota-proyecto-id").value;
-    const texto    = document.getElementById("nota-texto").value.trim();
-    const ragEl    = document.querySelector("#modal-nota .rag-opt[class*='sel-']");
-    const ragEstado = ragEl ? ragEl.dataset.rag : "verde";
-    const tipoEl   = document.querySelector("#modal-nota #nota-chips .chip.sel");
-    const tipo     = tipoEl ? tipoEl.dataset.tipo : "seguimiento";
+    const proyId     = document.getElementById("nota-proyecto-id").value;
+    const texto      = document.getElementById("nota-texto").value.trim();
+    const ragEl      = document.querySelector("#modal-nota .rag-opt[class*='sel-']");
+    const ragEstado  = ragEl ? ragEl.dataset.rag : "verde";
+    const tipoEl     = document.querySelector("#modal-nota #nota-chips .chip.sel");
+    const tipo       = tipoEl ? tipoEl.dataset.tipo : "seguimiento";
+    const subestatus = document.getElementById("nota-subestatus").value;
+    const avanceEl   = document.getElementById("nota-avance");
+    const avance     = avanceEl ? parseInt(avanceEl.value) : 0;
 
     if (!texto) { alert("Escribe algo en la nota."); return; }
     if (!proyId) { alert("Selecciona un proyecto."); return; }
@@ -2032,15 +2350,18 @@
         texto,
         tipo,
         ragEstado,
+        subestatus:   subestatus || null,
+        avance:       avance > 0 ? avance : null,
         ragCambio:    false,
         creadoEn:     serverTimestamp()
       });
 
+      const proyUpdate = { ragEstado, ultimaNota: serverTimestamp() };
+      if (subestatus) proyUpdate.subestatus = subestatus;
+      if (avance > 0) proyUpdate.avance = avance;
+
       const proyRef = doc(db, "proyectos", proyId);
-      batch.update(proyRef, {
-        ragEstado,
-        ultimaNota: serverTimestamp()
-      });
+      batch.update(proyRef, proyUpdate);
 
       await batch.commit();
       closeModal("modal-nota");
@@ -2114,14 +2435,18 @@
   }
 
   function poblarSelectsUsuarios() {
-    const selects = ["asn-consultor","tarea-responsable","pip-responsable","ts-proyecto"];
     const options = EQUIPO.map(u =>
       `<option value="${u.email}">${u.nombre}</option>`
     ).join("");
 
-    ["asn-consultor","tarea-responsable","pip-responsable"].forEach(id => {
+    ["asn-consultor","tarea-responsable","pip-responsable","td-responsable","pip-edit-responsable"].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.innerHTML = options;
+    });
+
+    // Poblar selector de consultores en asignaciones iniciales de proyecto
+    document.querySelectorAll(".asig-ini-consultor").forEach(sel => {
+      sel.innerHTML = `<option value="">— Consultor —</option>` + options;
     });
   }
 
@@ -2271,11 +2596,12 @@
     }
 
     const estadoColor = { pendiente:"var(--hint)", "en-curso":"var(--amber)", completado:"var(--green)", bloqueado:"var(--red)" };
-    const tipoIcon    = { hito:"◆", tarea:"◻", incidencia:"⚠" };
+    const tipoIcon    = { hito:"◆", "tarea-tec":"⚙", "tarea-func":"📋", tarea:"◻", incidencia:"⚠", sesion:"💬", capacitacion:"📚" };
+    const tipoLabel   = { hito:"Hito", "tarea-tec":"Téc.", "tarea-func":"Func.", tarea:"Tarea", incidencia:"Incid.", sesion:"Sesión", capacitacion:"Capac." };
     const priorColor  = { baja:"var(--hint)", media:"var(--amber)", alta:"var(--red)", critica:"#ff0000" };
 
     cont.innerHTML = `<div class="projects-list">
-      <div class="proj-row header" style="grid-template-columns:30px 1fr 80px 100px 100px 90px 80px">
+      <div class="proj-row header" style="grid-template-columns:30px 1fr 70px 100px 100px 90px 80px">
         <div></div><div>Tarea</div><div>Tipo</div><div>Proyecto</div><div>Responsable</div><div>Fecha</div><div>Estado</div>
       </div>
       ${items.map(t => {
@@ -2283,14 +2609,15 @@
         const u     = EQUIPO.find(e => e.email === t.responsableEmail) || {};
         const fecha = t.fechaEstimada ? new Date(t.fechaEstimada).toLocaleDateString("es-MX",{day:"numeric",month:"short"}) : "—";
         const col   = estadoColor[t.estado] || "var(--muted)";
-        return `<div class="proj-row" style="grid-template-columns:30px 1fr 80px 100px 100px 90px 80px"
-          onclick="cambiarEstadoTarea('${t.id}','${t.estado||"pendiente"}')">
+        const safe  = encodeURIComponent(JSON.stringify({id:t.id,nombre:t.nombre||"",proyectoId:t.proyectoId||"",tipo:t.tipo||"tarea",descripcion:t.descripcion||"",fechaEstimada:t.fechaEstimada||"",responsableEmail:t.responsableEmail||"",estado:t.estado||"pendiente",prioridad:t.prioridad||"media"}));
+        return `<div class="proj-row" style="grid-template-columns:30px 1fr 70px 100px 100px 90px 80px;cursor:pointer"
+          onclick="abrirDetalleTarea('${safe}')">
           <div style="font-size:14px;color:${priorColor[t.prioridad]||'var(--muted)'}">${tipoIcon[t.tipo]||"◻"}</div>
           <div>
             <div class="proj-name">${t.nombre||"—"}</div>
             <div class="proj-client">${t.descripcion ? t.descripcion.slice(0,60)+"…" : ""}</div>
           </div>
-          <span class="tag tag-impl" style="font-size:10px">${t.tipo||"tarea"}</span>
+          <span class="tag tag-impl" style="font-size:10px;white-space:nowrap">${tipoLabel[t.tipo]||t.tipo||"tarea"}</span>
           <div style="font-size:11px;color:var(--muted)">${proy?.nombre?.split("—")[0]?.trim()||"—"}</div>
           <div style="font-size:11px;color:var(--muted)">${u.iniciales||"—"}</div>
           <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">${fecha}</div>
@@ -2300,10 +2627,61 @@
     </div>`;
   }
 
-  window.cambiarEstadoTarea = async (id, estadoActual) => {
-    const estados = ["pendiente","en-curso","completado","bloqueado"];
-    const next    = estados[(estados.indexOf(estadoActual) + 1) % estados.length];
-    try { await updateDoc(doc(db,"tareas",id), { estado: next }); } catch(e) { console.error(e); }
+  window.abrirDetalleTarea = (safe) => {
+    let t;
+    try { t = JSON.parse(decodeURIComponent(safe)); } catch(e) { return; }
+    document.getElementById("tarea-detalle-id").value    = t.id;
+    document.getElementById("tarea-detalle-titulo").textContent = t.nombre || "Detalle de tarea";
+    document.getElementById("td-nombre").value           = t.nombre;
+    document.getElementById("td-tipo").value             = t.tipo;
+    document.getElementById("td-fecha").value            = t.fechaEstimada;
+    document.getElementById("td-desc").value             = t.descripcion;
+    document.getElementById("td-estado").value           = t.estado;
+    // Proyecto
+    const tdProy = document.getElementById("td-proyecto");
+    if (tdProy) {
+      tdProy.innerHTML = (window._proyectos||[]).map(p => `<option value="${p.id}" ${p.id===t.proyectoId?"selected":""}>${p.nombre}</option>`).join("");
+    }
+    // Responsable
+    const tdResp = document.getElementById("td-responsable");
+    if (tdResp) {
+      tdResp.innerHTML = EQUIPO.map(u => `<option value="${u.email}" ${u.email===t.responsableEmail?"selected":""}>${u.nombre}</option>`).join("");
+    }
+    // Prioridad chips
+    document.querySelectorAll("#td-prioridad-chips .chip").forEach(c => {
+      c.classList.toggle("sel", c.dataset.val === t.prioridad);
+    });
+    openModal("modal-tarea-detalle");
+  };
+
+  window.guardarDetalleTarea = async () => {
+    const id = document.getElementById("tarea-detalle-id").value;
+    if (!id) return;
+
+    const nombre = document.getElementById("td-nombre").value.trim();
+    const tipo   = document.getElementById("td-tipo").value;
+    const proyId = document.getElementById("td-proyecto").value;
+    const fecha  = document.getElementById("td-fecha").value;
+    const resp   = document.getElementById("td-responsable").value;
+    const desc   = document.getElementById("td-desc").value.trim();
+    const estado = document.getElementById("td-estado").value;
+    const priorEl= document.querySelector("#td-prioridad-chips .chip.sel");
+    const prior  = priorEl?.dataset?.val || "media";
+
+    if (!nombre) { alert("El nombre es obligatorio."); return; }
+
+    const btn = document.getElementById("btn-guardar-tarea-detalle");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      await updateDoc(doc(db,"tareas",id), {
+        nombre, tipo, proyectoId: proyId,
+        fechaEstimada: fecha || null, responsableEmail: resp,
+        descripcion: desc, estado, prioridad: prior
+      });
+      closeModal("modal-tarea-detalle");
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Guardar cambios"; btn.disabled = false; }
   };
 
   window.filtrarTareasPorProyecto = () => {
@@ -2430,13 +2808,12 @@
 
   // ── Genera la UI de días al seleccionar semana ──
   window.generarDiasSemana = () => {
-    const semanaVal = document.getElementById("ts-semana").value; // "2025-W18"
+    const semanaVal = document.getElementById("ts-semana").value;
     if (!semanaVal) return;
 
     const [year, wStr] = semanaVal.split("-W");
     const week = parseInt(wStr);
 
-    // Calcular lunes de esa semana
     const lunes = getMonday(parseInt(year), week);
     const label = lunes.toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
     document.getElementById("ts-semana-label").textContent = `Semana del ${label}`;
@@ -2465,18 +2842,32 @@
           </div>
         </div>
         <div id="ts-entradas-${i}">
-          <div class="ts-entrada">
-            <select class="ts-proy-sel" data-dia="${i}" onchange="recalcularDia(${i})">
+          <div class="ts-entrada" style="grid-template-columns:1fr 1fr 60px auto">
+            <select class="ts-proy-sel" data-dia="${i}" onchange="cargarTareasDia(this,${i})">
               <option value="">— Proyecto —</option>
               ${optsProyecto}
             </select>
-            <input type="number" class="ts-h-inp" data-dia="${i}" min="0.5" max="8" step="0.5" placeholder="h" oninput="recalcularDia(${i})">
+            <select class="ts-tarea-sel" data-dia="${i}" onchange="recalcularDia(${i})">
+              <option value="">— Tarea —</option>
+            </select>
+            <input type="number" class="ts-h-inp" data-dia="${i}" min="0.5" max="24" step="0.5" placeholder="h" oninput="recalcularDia(${i})">
             <button class="ts-remove" onclick="removeEntrada(this,${i})">×</button>
           </div>
         </div>
-        <button class="ts-add-btn" onclick="agregarEntrada(${i})">+ agregar proyecto</button>
+        <button class="ts-add-btn" onclick="agregarEntrada(${i})">+ agregar tarea</button>
       </div>`;
     }).join("");
+  };
+
+  window.cargarTareasDia = (proySel, diaIdx) => {
+    const proyId  = proySel.value;
+    const row     = proySel.closest(".ts-entrada");
+    const tareaSel= row ? row.querySelector(".ts-tarea-sel") : null;
+    if (!tareaSel) return;
+    const tareas  = (window._tareas || []).filter(t => t.proyectoId === proyId && t.estado !== "completado");
+    tareaSel.innerHTML = `<option value="">— Tarea —</option>` +
+      tareas.map(t => `<option value="${t.id}">${t.nombre}</option>`).join("");
+    recalcularDia(diaIdx);
   };
 
   window.agregarEntrada = (diaIdx) => {
@@ -2484,10 +2875,14 @@
     const opts  = (window._proyectos||[]).map(p => `<option value="${p.id}">${p.nombre}</option>`).join("");
     const div   = document.createElement("div");
     div.className = "ts-entrada";
-    div.innerHTML = `<select class="ts-proy-sel" data-dia="${diaIdx}" onchange="recalcularDia(${diaIdx})">
+    div.style.cssText = "grid-template-columns:1fr 1fr 60px auto";
+    div.innerHTML = `<select class="ts-proy-sel" data-dia="${diaIdx}" onchange="cargarTareasDia(this,${diaIdx})">
         <option value="">— Proyecto —</option>${opts}
       </select>
-      <input type="number" class="ts-h-inp" data-dia="${diaIdx}" min="0.5" max="8" step="0.5" placeholder="h" oninput="recalcularDia(${diaIdx})">
+      <select class="ts-tarea-sel" data-dia="${diaIdx}" onchange="recalcularDia(${diaIdx})">
+        <option value="">— Tarea —</option>
+      </select>
+      <input type="number" class="ts-h-inp" data-dia="${diaIdx}" min="0.5" max="24" step="0.5" placeholder="h" oninput="recalcularDia(${diaIdx})">
       <button class="ts-remove" onclick="removeEntrada(this,${diaIdx})">×</button>`;
     cont.appendChild(div);
   };
@@ -2532,14 +2927,16 @@
       const diaEl  = document.getElementById(`ts-dia-${i}`);
       if (!diaEl) return;
       const fecha  = diaEl.dataset.fecha;
-      const proyEls= diaEl.querySelectorAll(".ts-proy-sel");
-      const hEls   = diaEl.querySelectorAll(".ts-h-inp");
+      const proyEls  = diaEl.querySelectorAll(".ts-proy-sel");
+      const tareaEls = diaEl.querySelectorAll(".ts-tarea-sel");
+      const hEls     = diaEl.querySelectorAll(".ts-h-inp");
 
       proyEls.forEach((sel, j) => {
-        const proyId = sel.value;
-        const horas  = parseFloat(hEls[j]?.value) || 0;
+        const proyId  = sel.value;
+        const tareaId = tareaEls[j]?.value || null;
+        const horas   = parseFloat(hEls[j]?.value) || 0;
         if (proyId && horas > 0) {
-          entries.push({ proyectoId: proyId, fecha, horas });
+          entries.push({ proyectoId: proyId, tareaId, fecha, horas });
         }
       });
     });
@@ -2552,11 +2949,12 @@
     try {
       const batch = writeBatch(db);
       entries.forEach(e => {
-        const id  = `${u.uid}_${e.proyectoId}_${e.fecha}`;
+        const id  = `${u.uid}_${e.proyectoId}_${e.tareaId||"gen"}_${e.fecha}`;
         const ref = doc(db, "timesheets", id);
         batch.set(ref, {
           consultorId: u.uid, consultorEmail: email,
-          proyectoId: e.proyectoId, semana,
+          proyectoId: e.proyectoId, tareaId: e.tareaId || null,
+          semana,
           fecha: e.fecha, horas: e.horas,
           aprobado: false, creadoEn: serverTimestamp()
         }, { merge: true });
@@ -2565,6 +2963,80 @@
       closeModal("modal-timesheet");
     } catch(e) { console.error(e); alert("Error al guardar."); }
     finally { btn.textContent = "Guardar semana"; btn.disabled = false; }
+  };
+
+  // ══════════════════════════════════
+  // OBJETOS TÉCNICOS / TRs
+  // ══════════════════════════════════
+  window.abrirObjetos = (proyId, proyNombre) => {
+    document.getElementById("objetos-proyecto-id").value = proyId;
+    document.getElementById("objetos-proyecto-label").textContent = `TRs / Objetos — ${proyNombre}`;
+    cargarObjetosList(proyId);
+    openModal("modal-objetos");
+  };
+
+  function cargarObjetosList(proyId) {
+    const lista = document.getElementById("objetos-lista");
+    lista.innerHTML = `<div style="color:var(--hint);font-size:12px">Cargando…</div>`;
+    getDocs(query(collection(db,"objetos"), where("proyectoId","==",proyId), orderBy("creadoEn","asc")))
+      .then(snap => {
+        window._objetosActuales = snap.docs.map(d => ({id:d.id,...d.data()}));
+        renderObjetoRows(window._objetosActuales);
+      }).catch(() => {
+        window._objetosActuales = [];
+        renderObjetoRows([]);
+      });
+  }
+
+  function renderObjetoRows(items) {
+    const lista = document.getElementById("objetos-lista");
+    lista.innerHTML = items.map((o,i) => `
+      <div style="display:grid;grid-template-columns:130px 1fr 100px 80px auto;gap:6px;align-items:center;margin-bottom:5px" data-obj-idx="${i}">
+        <input value="${o.tr||""}" placeholder="DEVK9..." style="font-size:12px;padding:5px 8px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--mono);outline:none" class="obj-tr">
+        <input value="${o.descripcion||""}" placeholder="Descripción del objeto" style="font-size:12px;padding:5px 8px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);outline:none" class="obj-desc">
+        <select style="font-size:12px;padding:5px 8px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);outline:none" class="obj-sis">
+          ${["DEV","QAS","PRD","Sandbox"].map(s=>`<option ${o.sistema===s?"selected":""}>${s}</option>`).join("")}
+        </select>
+        <select style="font-size:12px;padding:5px 8px;border-radius:6px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);outline:none" class="obj-est">
+          ${["Pendiente","Transportado","Rechazado"].map(s=>`<option ${o.estatus===s?"selected":""}>${s}</option>`).join("")}
+        </select>
+        <button onclick="this.closest('[data-obj-idx]').remove()" style="background:transparent;border:none;color:var(--hint);cursor:pointer;font-size:16px;line-height:1;padding:0 4px">×</button>
+      </div>`).join("") || `<div style="font-size:12px;color:var(--hint)">Sin objetos técnicos — usa el botón de abajo para agregar.</div>`;
+  }
+
+  window.agregarObjetoRow = () => {
+    const items = window._objetosActuales || [];
+    items.push({ tr:"", descripcion:"", sistema:"DEV", estatus:"Pendiente" });
+    renderObjetoRows(items);
+  };
+
+  window.guardarObjetos = async () => {
+    const proyId = document.getElementById("objetos-proyecto-id").value;
+    if (!proyId) return;
+
+    const rows = document.querySelectorAll("#objetos-lista [data-obj-idx]");
+    const nuevos = [...rows].map(row => ({
+      tr:          row.querySelector(".obj-tr").value.trim(),
+      descripcion: row.querySelector(".obj-desc").value.trim(),
+      sistema:     row.querySelector(".obj-sis").value,
+      estatus:     row.querySelector(".obj-est").value
+    })).filter(o => o.tr || o.descripcion);
+
+    const btn = document.getElementById("btn-guardar-objetos");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      // Borrar los existentes del proyecto y reescribir
+      const snap = await getDocs(query(collection(db,"objetos"), where("proyectoId","==",proyId)));
+      const batch = writeBatch(db);
+      snap.docs.forEach(d => batch.delete(d.ref));
+      nuevos.forEach(o => {
+        batch.set(doc(collection(db,"objetos")), { ...o, proyectoId: proyId, creadoEn: serverTimestamp() });
+      });
+      await batch.commit();
+      closeModal("modal-objetos");
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Guardar"; btn.disabled = false; }
   };
 
   // ══════════════════════════════════
@@ -2589,14 +3061,21 @@
 
     cont.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
       ${items.map(p => {
-        const probColor = p.probabilidad >= 70 ? "var(--green)" : p.probabilidad >= 40 ? "var(--amber)" : "var(--muted)";
+        const probColor = p.probabilidad >= 70 ? "var(--green)" : p.probabilidad >= 40 ? "var(--amber)" : p.probabilidad === 0 ? "var(--red)" : "var(--muted)";
         const resp      = EQUIPO.find(e => e.email === p.responsableEmail) || {};
         const fecha     = p.fechaEstimada ? new Date(p.fechaEstimada).toLocaleDateString("es-MX",{month:"short",year:"2-digit"}) : "—";
-        return `<div class="card">
+        const estadoLabel = p.estado === "rechazado" ? `<span style="font-size:10px;color:var(--red);font-weight:500">❌ Rechazado</span>` 
+                          : p.estado === "ganado"    ? `<span style="font-size:10px;color:var(--green);font-weight:500">✅ Ganado</span>` : "";
+        const pipObj = JSON.stringify({id:p.id,nombre:p.nombre||"",cliente:p.cliente||"",probabilidad:p.probabilidad,fechaEstimada:p.fechaEstimada||"",responsableEmail:p.responsableEmail||"",modulos:p.modulos||[]}).replace(/'/g,"\\'");
+        return `<div class="card" style="${p.estado==='rechazado'?'opacity:.5':''}">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
             <div style="font-size:13px;font-weight:500;color:var(--text);flex:1">${p.nombre}</div>
-            <span style="font-size:13px;font-weight:600;font-family:var(--mono);color:${probColor};margin-left:8px">${p.probabilidad}%</span>
+            <div style="display:flex;align-items:center;gap:6px;margin-left:8px">
+              <span style="font-size:13px;font-weight:600;font-family:var(--mono);color:${probColor}">${p.probabilidad}%</span>
+              ${p.estado !== 'rechazado' && p.estado !== 'ganado' ? `<button onclick='abrirEditPipeline(${pipObj})' style="background:transparent;border:0.5px solid var(--border2);border-radius:5px;color:var(--muted);cursor:pointer;font-size:11px;padding:2px 7px;font-family:var(--font)">Editar</button>` : ""}
+            </div>
           </div>
+          ${estadoLabel ? `<div style="margin-bottom:4px">${estadoLabel}</div>` : ""}
           <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${p.cliente||"—"}</div>
           <div style="height:3px;background:var(--bg3);border-radius:2px;margin-bottom:8px">
             <div style="width:${p.probabilidad}%;height:3px;background:${probColor};border-radius:2px"></div>
@@ -2628,16 +3107,94 @@
     btn.textContent = "Guardando…"; btn.disabled = true;
 
     try {
-      await addDoc(collection(db,"pipeline"), {
-        nombre, cliente, probabilidad: prob, modulos: mods,
-        fechaEstimada: fecha || null, responsableEmail: resp,
-        estado: "activo", creadoEn: serverTimestamp(), creadoPor: u.uid
-      });
-      closeModal("modal-pipeline");
+      if (prob === 100) {
+        // Promover directo a proyecto
+        await addDoc(collection(db,"proyectos"), {
+          nombre, cliente, tipo: "implementacion",
+          estado: "activo", ragEstado: "verde", subestatus: "no-comenzado", avance: 0,
+          modulos: mods, fechaCierre: fecha || null,
+          leadId: u.uid, leadNombre: u.inics,
+          horasConsumidas: 0, creadoEn: serverTimestamp(), creadoPor: u.uid,
+          origenPipeline: true
+        });
+        closeModal("modal-pipeline");
+        alert("✅ Proyecto creado en la pestaña Proyectos.");
+      } else if (prob === 0) {
+        await addDoc(collection(db,"pipeline"), {
+          nombre, cliente, probabilidad: prob, modulos: mods,
+          fechaEstimada: fecha || null, responsableEmail: resp,
+          estado: "rechazado", creadoEn: serverTimestamp(), creadoPor: u.uid
+        });
+        closeModal("modal-pipeline");
+      } else {
+        await addDoc(collection(db,"pipeline"), {
+          nombre, cliente, probabilidad: prob, modulos: mods,
+          fechaEstimada: fecha || null, responsableEmail: resp,
+          estado: "activo", creadoEn: serverTimestamp(), creadoPor: u.uid
+        });
+        closeModal("modal-pipeline");
+      }
       document.getElementById("pip-nombre").value  = "";
       document.getElementById("pip-cliente").value = "";
     } catch(e) { console.error(e); alert("Error al guardar."); }
     finally { btn.textContent = "Crear oportunidad"; btn.disabled = false; }
+  };
+
+  // ── EDITAR PIPELINE ──
+  window.abrirEditPipeline = (pip) => {
+    document.getElementById("pip-edit-id").value      = pip.id;
+    document.getElementById("pip-edit-nombre").value  = pip.nombre || "";
+    document.getElementById("pip-edit-cliente").value = pip.cliente || "";
+    document.getElementById("pip-edit-fecha").value   = pip.fechaEstimada || "";
+    document.getElementById("pip-edit-prob").value    = pip.probabilidad || 10;
+    // Responsable
+    const respSel = document.getElementById("pip-edit-responsable");
+    if (respSel) respSel.value = pip.responsableEmail || "";
+    // Módulos
+    document.querySelectorAll("#pip-edit-modulos .chip").forEach(c => {
+      c.classList.toggle("sel", (pip.modulos||[]).includes(c.textContent.trim()));
+    });
+    openModal("modal-pipeline-edit");
+  };
+
+  window.guardarPipelineEdit = async () => {
+    const id   = document.getElementById("pip-edit-id").value;
+    if (!id) return;
+    const prob   = parseInt(document.getElementById("pip-edit-prob").value);
+    const nombre = document.getElementById("pip-edit-nombre").value.trim();
+    const cliente= document.getElementById("pip-edit-cliente").value.trim();
+    const fecha  = document.getElementById("pip-edit-fecha").value;
+    const resp   = document.getElementById("pip-edit-responsable").value;
+    const mods   = [...document.querySelectorAll("#pip-edit-modulos .chip.sel")].map(c=>c.textContent.trim());
+
+    const btn = document.getElementById("btn-guardar-pipeline-edit");
+    btn.textContent = "Guardando…"; btn.disabled = true;
+
+    try {
+      if (prob === 100) {
+        // Crear proyecto y marcar pipeline como ganado
+        await addDoc(collection(db,"proyectos"), {
+          nombre, cliente, tipo: "implementacion",
+          estado: "activo", ragEstado: "verde", subestatus: "no-comenzado", avance: 0,
+          modulos: mods, fechaCierre: fecha || null,
+          leadId: window._currentUser.uid, leadNombre: window._currentUser.inics,
+          horasConsumidas: 0, creadoEn: serverTimestamp(), origenPipeline: true
+        });
+        await updateDoc(doc(db,"pipeline",id), { estado: "ganado", probabilidad: 100 });
+        closeModal("modal-pipeline-edit");
+        alert("✅ Proyecto creado. La oportunidad queda marcada como Ganada.");
+      } else if (prob === 0) {
+        await updateDoc(doc(db,"pipeline",id), { estado: "rechazado", probabilidad: 0 });
+        closeModal("modal-pipeline-edit");
+      } else {
+        await updateDoc(doc(db,"pipeline",id), {
+          nombre, cliente, probabilidad: prob, modulos: mods,
+          fechaEstimada: fecha || null, responsableEmail: resp
+        });
+        closeModal("modal-pipeline-edit");
+      }
+    } catch(e) { console.error(e); alert("Error al guardar."); }
+    finally { btn.textContent = "Guardar cambios"; btn.disabled = false; }
   };
 
   function show(id) { document.getElementById(id).classList.remove("hidden"); }
